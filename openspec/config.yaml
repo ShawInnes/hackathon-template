@@ -1,20 +1,18 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui. Turbopack is the default bundler.
+  Auth: Auth.js v5 with Okta PKCE — no client secret. Session stored in PostgreSQL via Prisma adapter.
+  Database: PostgreSQL 16 via Prisma ORM. Schema in prisma/schema.prisma.
+  Testing: Vitest + @testing-library/react. Tests co-located with components (*.test.tsx).
+  UI rule: always use shadcn/ui primitives. Install with: npx shadcn add <component>.
+  Component rule: before any feature, consider extracting UI into a reusable component in src/components/.
+  Route protection: add paths to PROTECTED_PATHS in src/proxy.ts (Next.js 16 convention).
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - Keep proposals under 400 words
+    - Always include a "Non-goals" section
+  tasks:
+    - Break tasks into chunks of max 1 hour
+    - Each task must include how to verify it works
