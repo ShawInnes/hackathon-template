@@ -1102,7 +1102,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Overview
 
-This is a Next.js 15 hackathon project. The stack is: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (Okta PKCE), Prisma ORM, PostgreSQL.
+This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (Okta PKCE), Prisma ORM, PostgreSQL. Turbopack is the default bundler.
 
 ## OpenSpec Workflow
 
@@ -1150,7 +1150,7 @@ Replace the contents of `openspec/config.yaml`:
 schema: spec-driven
 
 context: |
-  Tech stack: Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
+  Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui. Turbopack is the default bundler.
   Auth: Auth.js v5 with Okta PKCE — no client secret. Session stored in PostgreSQL via Prisma adapter.
   Database: PostgreSQL 16 via Prisma ORM. Schema in prisma/schema.prisma.
   Testing: Vitest + @testing-library/react. Tests co-located with components (*.test.tsx).
@@ -1196,11 +1196,11 @@ Create `README.md`:
 ```markdown
 # Hackday Template
 
-A Next.js 15 hackathon starter with Okta auth, PostgreSQL, and Claude Code built in.
+A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built in.
 
 ## What's included
 
-- **Next.js 15** — App Router, TypeScript, Tailwind CSS
+- **Next.js 16** — App Router, TypeScript, Tailwind CSS, Turbopack
 - **Auth.js v5** — Okta sign-in via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations
 - **shadcn/ui** — Button, Card, Avatar, DropdownMenu, Separator pre-installed
