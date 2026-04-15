@@ -25,7 +25,6 @@
 | `package.json` | Dependencies and npm scripts |
 | `tsconfig.json` | TypeScript config |
 | `next.config.ts` | Next.js config |
-| `tailwind.config.ts` | Tailwind config |
 | `components.json` | shadcn/ui config |
 | `.gitignore` | Standard Next.js gitignore |
 | `.env.example` | All required env vars documented |
@@ -60,7 +59,8 @@
 ## Task 1: Bootstrap Next.js 16
 
 **Files:**
-- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `tailwind.config.ts`, `.gitignore`, `public/`, `src/app/globals.css`
+- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `.gitignore`, `public/`, `src/app/globals.css`
+- Note: Tailwind v4 (included with Next.js 16) uses `postcss.config.mjs` + CSS-first config instead of `tailwind.config.ts`
 
 - [ ] **Step 1: Scaffold the Next.js app**
 
@@ -134,7 +134,7 @@ Expected: `200`. Kill the dev server after: `pkill -f "next dev"`.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add package.json package-lock.json tsconfig.json next.config.ts tailwind.config.ts .gitignore public/ src/
+git add package.json package-lock.json tsconfig.json next.config.ts postcss.config.mjs .gitignore public/ src/
 git commit -m "feat: scaffold Next.js 16 with TypeScript, Tailwind, and Turbopack"
 ```
 
