@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude skills *)",
+      "Read(//Users/shaw/.agent-skills/claude-skills/skills/create-nextjs-component/**)",
+      "Read(//Users/shaw/.agent-skills/claude-skills/skills/create-nextjs-app/**)",
+      "WebSearch",
+      "Bash(npx create-next-app@latest *)",
+      "Bash(rm -rf /tmp/next-scaffold)",
+      "Bash(mkdir /tmp/next-scaffold)",
+      "Bash(cp -r /tmp/next-scaffold/. /Users/shaw/devops/hackday-template/ --backup=simple)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(rsync -av --exclude='.git' --exclude='node_modules' --exclude='CLAUDE.md' . /Users/shaw/devops/hackday-template/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(node *)",
+      "Bash(npx prisma *)",
+      "Bash(/Users/shaw/devops/hackday-template/node_modules/.bin/prisma version *)",
+      "Bash(./node_modules/.bin/prisma init *)",
+      "Bash(./node_modules/.bin/prisma validate *)",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(npx tsc *)",
+      "Bash(ls /Users/shaw/devops/hackday-template/tailwind.config.*)",
+      "Bash(npx shadcn@latest *)"
+    ]
+  }
+}
