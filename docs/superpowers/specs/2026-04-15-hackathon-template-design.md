@@ -19,7 +19,9 @@ hackday-template/
 │   │   ├── openspec-propose/
 │   │   ├── openspec-apply-change/
 │   │   ├── openspec-archive-change/
-│   │   └── commit-commands/
+│   │   ├── commit-commands/
+│   │   ├── create-nextjs-component/
+│   │   └── superpowers-systematic-debugging/
 │   └── commands/
 │       └── opsx/
 │           ├── explore.md
@@ -72,7 +74,7 @@ hackday-template/
 
 Docker Compose-based devcontainer with two services:
 
-- **`web`** — Node 20, mounts the workspace, runs `npm install && npx prisma migrate deploy && npm run dev` on start
+- **`web`** — Node 24, mounts the workspace, runs `npm install && npx prisma migrate deploy && npm run dev` on start
 - **`db`** — Postgres 16, data persisted to a named volume
 
 **Ports exposed:**
@@ -161,10 +163,13 @@ These rules apply whether teams use slash commands or ask Claude freeform.
 
 ## 6. Claude Code Integration
 
+OpenSpec is the primary planning and change management workflow. Superpowers skills that overlap with OpenSpec (brainstorming, writing-plans, executing-plans) are intentionally excluded to avoid two competing planning workflows.
+
 **`.claude/` includes:**
 - OpenSpec workflow skills: `opsx:explore`, `opsx:propose`, `opsx:apply`, `opsx:archive`
-- Dev essentials: `commit-commands` (commit, push, PR)
-- Component creation: `create-nextjs-component` skill with shadcn-first as a hard rule
+- `commit-commands` — commit, push, and open PRs
+- `create-nextjs-component` — component scaffolding with shadcn-first as a hard rule
+- `superpowers:systematic-debugging` — structured debugging methodology
 
 **`CLAUDE.md` (project-level)** enforces:
 - shadcn-first UI development
