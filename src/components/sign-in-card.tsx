@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
+import { signIn } from "@/lib/auth"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 
 export function SignInCard() {
@@ -10,9 +10,16 @@ export function SignInCard() {
         <CardDescription>Sign in to access the hackday app</CardDescription>
       </CardHeader>
       <CardContent>
-        <Link href="/api/auth/signin" className={buttonVariants({ className: "w-full" })}>
-          Sign in with SSO
-        </Link>
+        <form
+          action={async () => {
+            "use server"
+            await signIn("oidc")
+          }}
+        >
+          <Button type="submit" className="w-full">
+            Sign in with SSO
+          </Button>
+        </form>
       </CardContent>
     </Card>
   )

@@ -1,10 +1,8 @@
 import { render, screen } from "@testing-library/react"
 import { SignInCard } from "./sign-in-card"
 
-vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+vi.mock("@/lib/auth", () => ({
+  signIn: vi.fn(),
 }))
 
 describe("SignInCard", () => {
@@ -13,9 +11,8 @@ describe("SignInCard", () => {
     expect(screen.getByRole("heading")).toBeInTheDocument()
   })
 
-  it("renders the sign-in button linking to SSO", () => {
+  it("renders the sign-in button", () => {
     render(<SignInCard />)
-    const link = screen.getByRole("link", { name: /sign in with sso/i })
-    expect(link).toHaveAttribute("href", "/api/auth/signin")
+    expect(screen.getByRole("button", { name: /sign in with sso/i })).toBeInTheDocument()
   })
 })
