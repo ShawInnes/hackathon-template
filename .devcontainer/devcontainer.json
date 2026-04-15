@@ -1,0 +1,29 @@
+{
+  "name": "Hackday Template",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "web",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [3000, 5432, 5555],
+  "portsAttributes": {
+    "3000": { "label": "Next.js", "onAutoForward": "notify" },
+    "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+    "5555": { "label": "Prisma Studio", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "npm install && npx prisma generate",
+  "postStartCommand": "npx prisma migrate deploy",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Prisma.prisma",
+        "bradlc.vscode-tailwindcss",
+        "claude.claude-vscode"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}
