@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Overview
 
-This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (Okta PKCE), Prisma ORM, PostgreSQL. Turbopack is the default bundler.
+This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (OIDC PKCE), Prisma ORM, PostgreSQL. Turbopack is the default bundler.
 
 ## OpenSpec Workflow
 

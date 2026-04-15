@@ -1,11 +1,11 @@
 # Hackday Template
 
-A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built in.
+A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code built in.
 
 ## What's included
 
 - **Next.js 16** — App Router, TypeScript, Tailwind CSS, Turbopack
-- **Auth.js v5** — Okta sign-in via PKCE (no client secret needed)
+- **Auth.js v5** — OIDC SSO via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations
 - **shadcn/ui** — Button, Card, Avatar, DropdownMenu, Separator pre-installed
 - **Dev container** — everything runs in Docker, no local setup required
@@ -23,8 +23,8 @@ A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built
    ```
    | Variable | Where to get it |
    |----------|----------------|
-   | `AUTH_OKTA_ID` | Provided by hackathon organisers |
-   | `AUTH_OKTA_ISSUER` | Provided by hackathon organisers |
+   | `AUTH_OIDC_ID` | OIDC client ID — provided by hackathon organisers |
+   | `AUTH_OIDC_ISSUER` | OIDC issuer URL — provided by hackathon organisers |
    | `AUTH_SECRET` | Run: `openssl rand -base64 32` |
    | `DATABASE_URL` | Pre-filled — uses the devcontainer Postgres |
 

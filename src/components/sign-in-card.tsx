@@ -11,7 +11,7 @@ export function SignInCard() {
       </CardHeader>
       <CardContent>
         <Link href="/api/auth/signin" className={buttonVariants({ className: "w-full" })}>
-          Sign in with Okta
+          Sign in with SSO
         </Link>
       </CardContent>
     </Card>

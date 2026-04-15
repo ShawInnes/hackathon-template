@@ -13,9 +13,9 @@ describe("SignInCard", () => {
     expect(screen.getByRole("heading")).toBeInTheDocument()
   })
 
-  it("renders the sign-in button linking to Okta", () => {
+  it("renders the sign-in button linking to SSO", () => {
     render(<SignInCard />)
-    const link = screen.getByRole("link", { name: /sign in with okta/i })
+    const link = screen.getByRole("link", { name: /sign in with sso/i })
     expect(link).toHaveAttribute("href", "/api/auth/signin")
   })
 })
