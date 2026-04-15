@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hackday Template
 
-## Getting Started
+A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built in.
 
-First, run the development server:
+## What's included
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 16** — App Router, TypeScript, Tailwind CSS, Turbopack
+- **Auth.js v5** — Okta sign-in via PKCE (no client secret needed)
+- **Prisma + PostgreSQL** — database with migrations
+- **shadcn/ui** — Button, Card, Avatar, DropdownMenu, Separator pre-installed
+- **Dev container** — everything runs in Docker, no local setup required
+- **Claude Code skills** — OpenSpec workflow, component scaffolding, debugging
+
+## Getting started
+
+**Prerequisites:** Docker Desktop, VS Code with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+1. **Fork** this repository in Bitbucket
+2. **Open** the repo in VS Code → when prompted, click "Reopen in Container"
+3. **Copy** `.env.example` to `.env.local` and fill in your values:
+   ```bash
+   cp .env.example .env.local
+   ```
+   | Variable | Where to get it |
+   |----------|----------------|
+   | `AUTH_OKTA_ID` | Provided by hackathon organisers |
+   | `AUTH_OKTA_ISSUER` | Provided by hackathon organisers |
+   | `AUTH_SECRET` | Run: `openssl rand -base64 32` |
+   | `DATABASE_URL` | Pre-filled — uses the devcontainer Postgres |
+
+4. **Run** the dev server:
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) — you should see the sign-in page.
+
+## Building your app
+
+### Add a new page
+
+Create `src/app/my-page/page.tsx`. To make it authenticated:
+
+```typescript
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { PageLayout } from "@/components/page-layout"
+
+export default async function MyPage() {
+  const session = await auth()
+  if (!session?.user) redirect("/")
+
+  return (
+    <PageLayout user={session.user}>
+      <h1>My Page</h1>
+    </PageLayout>
+  )
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then add `"/my-page"` to `PROTECTED_PATHS` in `src/proxy.ts`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Add a database model
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `prisma/schema.prisma` — add your model below the comment line, then:
 
-## Learn More
+```bash
+npm run prisma:migrate   # creates and runs the migration
+npm run prisma:studio    # opens a database browser at localhost:5555
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Add a UI component
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Install a shadcn primitive first
+npx shadcn add <component-name>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Or use the Claude Code skill to scaffold a custom component
+# In Claude Code: /create-nextjs-component
+```
 
-## Deploy on Vercel
+### Plan a feature with OpenSpec
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+/opsx:propose my-feature-name    # creates proposal, design, tasks
+/opsx:apply my-feature-name      # implements the tasks
+/opsx:archive my-feature-name    # archives when done
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## npm scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run dev` | Start dev server at localhost:3000 |
+| `npm run build` | Production build |
+| `npm run test` | Run tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run prisma:migrate` | Create a new migration |
+| `npm run prisma:studio` | Open Prisma Studio |
+| `npm run prisma:deploy` | Apply migrations (used in devcontainer start) |
