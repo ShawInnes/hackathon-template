@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   web:
-    image: mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm
+    image: mcr.microsoft.com/devcontainers/javascript-node:24-trixie
     volumes:
       - ..:/workspace:cached
     command: sleep infinity
@@ -13,7 +11,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres

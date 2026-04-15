@@ -21,12 +21,12 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
    ```bash
    cp .env.example .env.local
    ```
-   | Variable | Where to get it |
-   |----------|----------------|
-   | `AUTH_OIDC_ID` | OIDC client ID — provided by hackathon organisers |
+   | Variable           | Where to get it                                    |
+   | ------------------ | -------------------------------------------------- |
+   | `AUTH_OIDC_ID`     | OIDC client ID — provided by hackathon organisers  |
    | `AUTH_OIDC_ISSUER` | OIDC issuer URL — provided by hackathon organisers |
-   | `AUTH_SECRET` | Run: `openssl rand -base64 32` |
-   | `DATABASE_URL` | Pre-filled — uses the devcontainer Postgres |
+   | `AUTH_SECRET`      | Run: `openssl rand -base64 32`                     |
+   | `DATABASE_URL`     | Pre-filled — uses the devcontainer Postgres. **Must be `postgresql://postgres:postgres@db:5432/hackday`** (not `localhost`) inside the container |
 
 4. **Run** the dev server:
    ```bash
@@ -88,15 +88,15 @@ npx shadcn add <component-name>
 
 ## npm scripts
 
-| Script | Purpose |
-|--------|---------|
-| `npm run dev` | Start dev server at localhost:3000 |
-| `npm run build` | Production build |
-| `npm run test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run prisma:migrate` | Create a new migration |
-| `npm run prisma:studio` | Open Prisma Studio |
-| `npm run prisma:deploy` | Apply migrations (used in devcontainer start) |
+| Script                   | Purpose                                       |
+| ------------------------ | --------------------------------------------- |
+| `npm run dev`            | Start dev server at localhost:3000            |
+| `npm run build`          | Production build                              |
+| `npm run test`           | Run tests                                     |
+| `npm run test:watch`     | Run tests in watch mode                       |
+| `npm run prisma:migrate` | Create a new migration                        |
+| `npm run prisma:studio`  | Open Prisma Studio                            |
+| `npm run prisma:deploy`  | Apply migrations (used in devcontainer start) |
 
 ## Devcontainer
 
@@ -114,19 +114,19 @@ The devcontainer runs two Docker services: `web` (Node 24) and `db` (Postgres 16
 
 ### What happens on start
 
-| Event | What runs |
-|-------|-----------|
+| Event             | What runs                            |
+| ----------------- | ------------------------------------ |
 | Container created | `npm install && npx prisma generate` |
-| Container started | `npx prisma migrate deploy` |
+| Container started | `npx prisma migrate deploy`          |
 
 Migrations run automatically on every start, so the database schema is always up to date after a `prisma:migrate`.
 
 ### Ports
 
-| Port | Service |
-|------|---------|
-| 3000 | Next.js dev server |
-| 5432 | PostgreSQL |
+| Port | Service                                 |
+| ---- | --------------------------------------- |
+| 3000 | Next.js dev server                      |
+| 5432 | PostgreSQL                              |
 | 5555 | Prisma Studio (`npm run prisma:studio`) |
 
 All three are forwarded to your local machine automatically.
