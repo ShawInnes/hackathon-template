@@ -56,7 +56,7 @@ hackday-template/
 │   │   ├── auth.ts                    # Auth.js config
 │   │   ├── prisma.ts                  # Prisma client singleton
 │   │   └── utils.ts                   # shadcn cn() helper
-│   └── middleware.ts                  # Route protection
+│   └── proxy.ts                       # Route protection (Next.js 16)
 ├── .env.example
 ├── .gitignore
 ├── CLAUDE.md
@@ -105,9 +105,10 @@ DATABASE_URL=             # Pre-set in .env.example for devcontainer Postgres
 - Prisma adapter for session/user persistence
 - Session strategy: database
 
-**Route protection (`src/middleware.ts`):**
-- Declarative config array — teams add paths to protect new routes, no per-page boilerplate
-- Unauthenticated requests to protected routes redirect to `/`
+**Route protection (`src/proxy.ts`):**
+- Next.js 16 convention — `middleware.ts` is deprecated, renamed to `proxy.ts`, function exported as `proxy`
+- Optimistic cookie-based check in proxy; pages call `auth()` directly as the authoritative validation
+- Teams add paths to `PROTECTED_PATHS` array to protect new routes — no per-page boilerplate
 
 **Starter pages:**
 - `/` — Public landing page with "Sign in with Okta" button
@@ -142,7 +143,7 @@ Prisma ORM with PostgreSQL.
 
 ## 5. UI & Components
 
-**Stack:** Next.js App Router + Tailwind CSS + shadcn/ui
+**Stack:** Next.js 16 App Router + Tailwind CSS + shadcn/ui (Turbopack default bundler)
 
 **Pre-installed shadcn/ui primitives:**
 - Button, Card, Avatar, DropdownMenu, Separator

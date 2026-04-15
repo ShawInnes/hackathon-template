@@ -2,11 +2,17 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a production-ready Next.js 15 hackathon template with Okta PKCE auth, Prisma + PostgreSQL, shadcn/ui components, devcontainer, and Claude Code skills pre-configured so teams can fork → open → fill 3 env vars → start building.
+**Goal:** Build a production-ready Next.js 16 hackathon template with Okta PKCE auth, Prisma + PostgreSQL, shadcn/ui components, devcontainer, and Claude Code skills pre-configured so teams can fork → open → fill 3 env vars → start building.
 
-**Architecture:** Single Next.js 15 App Router application. Auth.js v5 handles Okta PKCE authentication (no client secret) with the Prisma adapter storing sessions in PostgreSQL. shadcn/ui provides the component library. All infrastructure runs inside a Docker Compose devcontainer (web + db services). Claude Code skills are vendored into `.claude/` so teams get them on fork.
+**Architecture:** Single Next.js 16 App Router application. Auth.js v5 handles Okta PKCE authentication (no client secret) with the Prisma adapter storing sessions in PostgreSQL. shadcn/ui provides the component library. All infrastructure runs inside a Docker Compose devcontainer (web + db services). Claude Code skills are vendored into `.claude/` so teams get them on fork. Route protection uses `proxy.ts` (Next.js 16 convention) with an optimistic cookie check; pages do full `auth()` validation as the source of truth.
 
-**Tech Stack:** Next.js 15, React 19, TypeScript 5, Auth.js v5 (`next-auth@beta`), `@auth/prisma-adapter`, Prisma 5, PostgreSQL 16, Tailwind CSS v3, shadcn/ui, Node 24, Docker Compose, Vitest, @testing-library/react
+**Tech Stack:** Next.js 16, React 19.2, TypeScript 5, Auth.js v5 (`next-auth@beta`), `@auth/prisma-adapter`, Prisma 5, PostgreSQL 16, Tailwind CSS v3, shadcn/ui, Node 24, Docker Compose, Vitest, @testing-library/react
+
+**Next.js 16 key behaviours vs 15:**
+- Turbopack is the default bundler for both `next dev` and `next build` — no flags needed
+- `middleware.ts` is deprecated and renamed to `proxy.ts`; exported function must be named `proxy`
+- Node.js 20.9+ required (Node 24 in devcontainer satisfies this)
+- `next lint` command removed — use ESLint CLI directly
 
 ---
 
@@ -29,7 +35,7 @@
 | `src/lib/prisma.ts` | Prisma client singleton |
 | `src/lib/auth.ts` | Auth.js v5 config (Okta PKCE) |
 | `src/lib/utils.ts` | shadcn `cn()` helper |
-| `src/middleware.ts` | Declarative route protection |
+| `src/proxy.ts` | Route protection (Next.js 16 convention — optimistic cookie check, pages do full auth validation) |
 | `src/app/api/auth/[...nextauth]/route.ts` | Auth.js API route handler |
 | `src/app/layout.tsx` | Root layout |
 | `src/app/page.tsx` | Public landing page |
@@ -51,7 +57,7 @@
 
 ---
 
-## Task 1: Bootstrap Next.js 15
+## Task 1: Bootstrap Next.js 16
 
 **Files:**
 - Create: `package.json`, `tsconfig.json`, `next.config.ts`, `tailwind.config.ts`, `.gitignore`, `public/`, `src/app/globals.css`
@@ -115,6 +121,8 @@ Expected: `node_modules/` populated, no errors. Warnings about peer deps are acc
 
 - [ ] **Step 4: Verify the app boots**
 
+Turbopack is the default in Next.js 16 — no `--turbopack` flag needed.
+
 ```bash
 npm run dev &
 sleep 5
@@ -127,7 +135,7 @@ Expected: `200`. Kill the dev server after: `pkill -f "next dev"`.
 
 ```bash
 git add package.json package-lock.json tsconfig.json next.config.ts tailwind.config.ts .gitignore public/ src/
-git commit -m "feat: scaffold Next.js 15 with TypeScript and Tailwind"
+git commit -m "feat: scaffold Next.js 16 with TypeScript, Tailwind, and Turbopack"
 ```
 
 ---
@@ -513,26 +521,37 @@ import { handlers } from "@/lib/auth"
 export const { GET, POST } = handlers
 ```
 
-- [ ] **Step 3: Create the middleware for route protection**
+- [ ] **Step 3: Create proxy.ts for route protection**
 
-Create `src/middleware.ts`:
+In Next.js 16, `middleware.ts` is deprecated and renamed to `proxy.ts`. The exported function must be named `proxy`. Because Auth.js v5's `auth()` export doesn't yet have a clean `proxy` re-export pattern, use a lightweight cookie-based check in proxy.ts — pages still call `auth()` directly as the authoritative check.
+
+Create `src/proxy.ts`:
 
 ```typescript
-import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
 // Add paths that require authentication here.
+// Pages also call auth() directly — this is an optimistic UX redirect only.
 const PROTECTED_PATHS = ["/dashboard"]
 
-export default auth((req) => {
+export function proxy(request: NextRequest) {
   const isProtected = PROTECTED_PATHS.some((path) =>
-    req.nextUrl.pathname.startsWith(path)
+    request.nextUrl.pathname.startsWith(path)
   )
 
-  if (isProtected && !req.auth) {
-    return NextResponse.redirect(new URL("/", req.url))
+  if (isProtected) {
+    // Optimistic check: look for Auth.js session cookie.
+    // Full session validation happens inside each protected page via auth().
+    const sessionCookie =
+      request.cookies.get("authjs.session-token") ||
+      request.cookies.get("__Secure-authjs.session-token")
+
+    if (!sessionCookie) {
+      return NextResponse.redirect(new URL("/", request.url))
+    }
   }
-})
+}
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
@@ -550,8 +569,8 @@ Expected: No errors. (Warnings about missing env vars at runtime are fine — th
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/lib/auth.ts "src/app/api/auth/[...nextauth]/" src/middleware.ts
-git commit -m "feat: add Auth.js v5 with Okta PKCE provider"
+git add src/lib/auth.ts "src/app/api/auth/[...nextauth]/" src/proxy.ts
+git commit -m "feat: add Auth.js v5 with Okta PKCE provider and Next.js 16 proxy"
 ```
 
 ---
@@ -1111,7 +1130,7 @@ Use OpenSpec for all structured feature work:
 ## Adding Features
 
 - New routes: create `src/app/<route>/page.tsx`. Wrap in `<PageLayout>` and call `auth()` at the top.
-- Protect a route: add its path to the `PROTECTED_PATHS` array in `src/middleware.ts`.
+- Protect a route: add its path to the `PROTECTED_PATHS` array in `src/proxy.ts`.
 - New database model: add it to `prisma/schema.prisma` below the comment line, then run `npm run prisma:migrate`.
 
 ## Available Commands
@@ -1234,7 +1253,7 @@ export default async function MyPage() {
 }
 ```
 
-Then add `"/my-page"` to `PROTECTED_PATHS` in `src/middleware.ts`.
+Then add `"/my-page"` to `PROTECTED_PATHS` in `src/proxy.ts`.
 
 ### Add a database model
 
@@ -1305,8 +1324,10 @@ Expected: No errors.
 
 - [ ] **Step 3: Run ESLint**
 
+Note: `next lint` is removed in Next.js 16. Run ESLint directly:
+
 ```bash
-npm run lint
+npx eslint src/
 ```
 
 Expected: No errors. Address any warnings that appear.
@@ -1344,4 +1365,5 @@ git commit -m "chore: final verification — hackathon template complete"
 - [x] Type names consistent across tasks (NavbarUser, NavbarProps, PageLayoutProps)
 - [x] Auth.js exports (handlers, auth, signIn, signOut) used consistently in Tasks 5, 7, 9
 - [x] Prisma client imported as `prisma` from `@/lib/prisma` throughout
-- [x] PROTECTED_PATHS referenced in both middleware (Task 5) and README (Task 12)
+- [x] PROTECTED_PATHS referenced in both proxy.ts (Task 5) and README (Task 12)
+- [x] proxy.ts uses cookie-based optimistic check; pages use full auth() validation (two-layer security)
