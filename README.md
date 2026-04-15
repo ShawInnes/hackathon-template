@@ -97,3 +97,54 @@ npx shadcn add <component-name>
 | `npm run prisma:migrate` | Create a new migration |
 | `npm run prisma:studio` | Open Prisma Studio |
 | `npm run prisma:deploy` | Apply migrations (used in devcontainer start) |
+
+## Devcontainer
+
+The devcontainer runs two Docker services: `web` (Node 24) and `db` (Postgres 16). Opening the repo in VS Code or a Coder workspace starts both automatically.
+
+### Starting the devcontainer
+
+**VS Code:**
+1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+2. Open the repo — VS Code will prompt "Reopen in Container", click it
+3. Or open the Command Palette (`Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
+
+**Coder workspace:**
+- The devcontainer starts automatically when the workspace is created — no extra steps
+
+### What happens on start
+
+| Event | What runs |
+|-------|-----------|
+| Container created | `npm install && npx prisma generate` |
+| Container started | `npx prisma migrate deploy` |
+
+Migrations run automatically on every start, so the database schema is always up to date after a `prisma:migrate`.
+
+### Ports
+
+| Port | Service |
+|------|---------|
+| 3000 | Next.js dev server |
+| 5432 | PostgreSQL |
+| 5555 | Prisma Studio (`npm run prisma:studio`) |
+
+All three are forwarded to your local machine automatically.
+
+### Rebuilding the container
+
+If you change `package.json`, `.devcontainer/docker-compose.yml`, or `.devcontainer/devcontainer.json`, rebuild the container to pick up the changes:
+
+**VS Code:** Command Palette → **Dev Containers: Rebuild Container**
+
+The Postgres data volume (`postgres-data`) persists across rebuilds — your database is not wiped.
+
+### Private CA certificates
+
+If your OIDC provider uses a certificate signed by a private CA, Node.js will reject the TLS connection even if your browser trusts it (they use separate CA stores). Add this to `.env.local` to disable TLS verification for local development:
+
+```bash
+NODE_TLS_REJECT_UNAUTHORIZED=0
+```
+
+Do not set this in production.
