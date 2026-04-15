@@ -10,7 +10,7 @@ export default async function DashboardPage() {
     redirect("/")
   }
 
-  const user = session.user as { name?: string | null; email?: string | null; image?: string | null }
+  const user = session.user
 
   return (
     <PageLayout user={user}>
