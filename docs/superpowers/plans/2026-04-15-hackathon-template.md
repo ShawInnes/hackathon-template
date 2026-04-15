@@ -1156,7 +1156,7 @@ context: |
   Testing: Vitest + @testing-library/react. Tests co-located with components (*.test.tsx).
   UI rule: always use shadcn/ui primitives. Install with: npx shadcn add <component>.
   Component rule: before any feature, consider extracting UI into a reusable component in src/components/.
-  Route protection: add paths to PROTECTED_PATHS in src/middleware.ts.
+  Route protection: add paths to PROTECTED_PATHS in src/proxy.ts (Next.js 16 convention).
 
 rules:
   proposal:
