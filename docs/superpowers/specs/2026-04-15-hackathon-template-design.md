@@ -12,7 +12,7 @@ A Bitbucket template repository for hackathon teams. Teams fork the repo, open i
 ## 1. Repository Structure
 
 ```
-hackday-template/
+hackathon-template/
 ├── .claude/
 │   ├── skills/
 │   │   ├── openspec-explore/

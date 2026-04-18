@@ -1,4 +1,4 @@
-# Hackday Template
+# Hackathon Template
 
 A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code built in.
 
@@ -26,7 +26,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
    | `AUTH_OIDC_ID`     | OIDC client ID — provided by hackathon organisers  |
    | `AUTH_OIDC_ISSUER` | OIDC issuer URL — provided by hackathon organisers |
    | `AUTH_SECRET`      | Run: `openssl rand -base64 32`                     |
-   | `DATABASE_URL`     | Pre-filled — uses the devcontainer Postgres. **Must be `postgresql://postgres:postgres@db:5432/hackday`** (not `localhost`) inside the container |
+   | `DATABASE_URL`     | Pre-filled — uses the devcontainer Postgres. **Must be `postgresql://postgres:postgres@db:5432/hackathon`** (not `localhost`) inside the container |
 
 4. **Run** the dev server:
    ```bash
