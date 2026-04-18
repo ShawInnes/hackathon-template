@@ -18,7 +18,7 @@ export function proxy(request: NextRequest) {
       request.cookies.get("__Secure-authjs.session-token")
 
     if (!sessionCookie) {
-      return NextResponse.redirect(new URL("/", request.url))
+      return NextResponse.redirect(new URL("/signin", request.url))
     }
   }
 }

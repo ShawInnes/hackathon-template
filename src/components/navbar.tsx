@@ -58,7 +58,7 @@ export function Navbar({ user }: NavbarProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Link href="/api/auth/signin" className={buttonVariants({ size: "sm" })}>
+          <Link href="/signin" className={buttonVariants({ size: "sm" })}>
             Sign in
           </Link>
         )}

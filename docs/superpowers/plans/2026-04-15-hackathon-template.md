@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a production-ready Next.js 16 hackathon template with Okta PKCE auth, Prisma + PostgreSQL, shadcn/ui components, devcontainer, and Claude Code skills pre-configured so teams can fork → open → fill 3 env vars → start building.
+**Goal:** Build a production-ready Next.js 16 hackathon template with Oidc PKCE auth, Prisma + PostgreSQL, shadcn/ui components, devcontainer, and Claude Code skills pre-configured so teams can fork → open → fill 3 env vars → start building.
 
-**Architecture:** Single Next.js 16 App Router application. Auth.js v5 handles Okta PKCE authentication (no client secret) with the Prisma adapter storing sessions in PostgreSQL. shadcn/ui provides the component library. All infrastructure runs inside a Docker Compose devcontainer (web + db services). Claude Code skills are vendored into `.claude/` so teams get them on fork. Route protection uses `proxy.ts` (Next.js 16 convention) with an optimistic cookie check; pages do full `auth()` validation as the source of truth.
+**Architecture:** Single Next.js 16 App Router application. Auth.js v5 handles Oidc PKCE authentication (no client secret) with the Prisma adapter storing sessions in PostgreSQL. shadcn/ui provides the component library. All infrastructure runs inside a Docker Compose devcontainer (web + db services). Claude Code skills are vendored into `.claude/` so teams get them on fork. Route protection uses `proxy.ts` (Next.js 16 convention) with an optimistic cookie check; pages do full `auth()` validation as the source of truth.
 
 **Tech Stack:** Next.js 16, React 19.2, TypeScript 5, Auth.js v5 (`next-auth@beta`), `@auth/prisma-adapter`, Prisma 5, PostgreSQL 16, Tailwind CSS v3, shadcn/ui, Node 24, Docker Compose, Vitest, @testing-library/react
 
@@ -32,7 +32,7 @@
 | `.devcontainer/devcontainer.json` | Devcontainer spec (Coder-compatible) |
 | `prisma/schema.prisma` | Auth.js adapter tables only |
 | `src/lib/prisma.ts` | Prisma client singleton |
-| `src/lib/auth.ts` | Auth.js v5 config (Okta PKCE) |
+| `src/lib/auth.ts` | Auth.js v5 config (Oidc PKCE) |
 | `src/lib/utils.ts` | shadcn `cn()` helper |
 | `src/proxy.ts` | Route protection (Next.js 16 convention — optimistic cookie check, pages do full auth validation) |
 | `src/app/api/auth/[...nextauth]/route.ts` | Auth.js API route handler |
@@ -236,9 +236,9 @@ DATABASE_URL="postgresql://postgres:postgres@db:5432/hackday"
 # Auth.js — generate with: openssl rand -base64 32
 AUTH_SECRET=""
 
-# Okta — provided by hackathon organiser (PKCE, no secret needed)
-AUTH_OKTA_ID=""
-AUTH_OKTA_ISSUER="https://your-org.okta.com"
+# Oidc — provided by hackathon organiser (PKCE, no secret needed)
+AUTH_OIDC_ID=""
+AUTH_OIDC_ISSUER="https://your-org.oidc.com"
 ```
 
 - [ ] **Step 4: Add DATABASE_URL to .gitignore**
@@ -474,7 +474,7 @@ git commit -m "feat: add Vitest and React Testing Library"
 
 ---
 
-## Task 5: Configure Auth.js v5 with Okta PKCE
+## Task 5: Configure Auth.js v5 with Oidc PKCE
 
 **Files:**
 - Create: `src/lib/auth.ts`, `src/app/api/auth/[...nextauth]/route.ts`, `src/middleware.ts`
@@ -485,18 +485,18 @@ Create `src/lib/auth.ts`:
 
 ```typescript
 import NextAuth from "next-auth"
-import Okta from "next-auth/providers/okta"
+import Oidc from "next-auth/providers/oidc"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    Okta({
-      clientId: process.env.AUTH_OKTA_ID!,
-      issuer: process.env.AUTH_OKTA_ISSUER!,
+    Oidc({
+      clientId: process.env.AUTH_OIDC_ID!,
+      issuer: process.env.AUTH_OIDC_ISSUER!,
       // PKCE flow — no client secret required.
-      // The Okta app must be configured as a public client with PKCE enabled.
+      // The Oidc app must be configured as a public client with PKCE enabled.
       checks: ["pkce", "state"],
     }),
   ],
@@ -570,7 +570,7 @@ Expected: No errors. (Warnings about missing env vars at runtime are fine — th
 
 ```bash
 git add src/lib/auth.ts "src/app/api/auth/[...nextauth]/" src/proxy.ts
-git commit -m "feat: add Auth.js v5 with Okta PKCE provider and Next.js 16 proxy"
+git commit -m "feat: add Auth.js v5 with Oidc PKCE provider and Next.js 16 proxy"
 ```
 
 ---
@@ -803,9 +803,9 @@ describe("SignInCard", () => {
     expect(screen.getByRole("heading")).toBeInTheDocument()
   })
 
-  it("renders the sign-in button linking to Okta", () => {
+  it("renders the sign-in button linking to Oidc", () => {
     render(<SignInCard />)
-    const link = screen.getByRole("link", { name: /sign in with okta/i })
+    const link = screen.getByRole("link", { name: /sign in with oidc/i })
     expect(link).toHaveAttribute("href", "/api/auth/signin")
   })
 })
@@ -837,7 +837,7 @@ export function SignInCard() {
       </CardHeader>
       <CardContent>
         <Button className="w-full" asChild>
-          <Link href="/api/auth/signin">Sign in with Okta</Link>
+          <Link href="/api/auth/signin">Sign in with Oidc</Link>
         </Button>
       </CardContent>
     </Card>
@@ -1102,7 +1102,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Overview
 
-This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (Okta PKCE), Prisma ORM, PostgreSQL. Turbopack is the default bundler.
+This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (Oidc PKCE), Prisma ORM, PostgreSQL. Turbopack is the default bundler.
 
 ## OpenSpec Workflow
 
@@ -1151,7 +1151,7 @@ schema: spec-driven
 
 context: |
   Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui. Turbopack is the default bundler.
-  Auth: Auth.js v5 with Okta PKCE — no client secret. Session stored in PostgreSQL via Prisma adapter.
+  Auth: Auth.js v5 with Oidc PKCE — no client secret. Session stored in PostgreSQL via Prisma adapter.
   Database: PostgreSQL 16 via Prisma ORM. Schema in prisma/schema.prisma.
   Testing: Vitest + @testing-library/react. Tests co-located with components (*.test.tsx).
   UI rule: always use shadcn/ui primitives. Install with: npx shadcn add <component>.
@@ -1196,12 +1196,12 @@ Create `README.md`:
 ```markdown
 # Hackday Template
 
-A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built in.
+A Next.js 16 hackathon starter with Oidc auth, PostgreSQL, and Claude Code built in.
 
 ## What's included
 
 - **Next.js 16** — App Router, TypeScript, Tailwind CSS, Turbopack
-- **Auth.js v5** — Okta sign-in via PKCE (no client secret needed)
+- **Auth.js v5** — Oidc sign-in via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations
 - **shadcn/ui** — Button, Card, Avatar, DropdownMenu, Separator pre-installed
 - **Dev container** — everything runs in Docker, no local setup required
@@ -1219,8 +1219,8 @@ A Next.js 16 hackathon starter with Okta auth, PostgreSQL, and Claude Code built
    ```
    | Variable | Where to get it |
    |----------|----------------|
-   | `AUTH_OKTA_ID` | Provided by hackathon organisers |
-   | `AUTH_OKTA_ISSUER` | Provided by hackathon organisers |
+   | `AUTH_OIDC_ID` | Provided by hackathon organisers |
+   | `AUTH_OIDC_ISSUER` | Provided by hackathon organisers |
    | `AUTH_SECRET` | Run: `openssl rand -base64 32` |
    | `DATABASE_URL` | Pre-filled — uses the devcontainer Postgres |
 
