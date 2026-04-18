@@ -1,9 +1,9 @@
 ---
-description: Prisma 7 conventions — triggers when working with database models, queries, migrations, or the Prisma client
+description: Prisma conventions — triggers when working with database models, queries, migrations, or the Prisma client
 globs: ["prisma/**", "src/generated/prisma/**", "src/lib/prisma.ts", "prisma.config.ts"]
 ---
 
-# Prisma 7
+# Prisma
 
 This project uses Prisma 7 with the new TypeScript-native client generator.
 
@@ -11,5 +11,6 @@ This project uses Prisma 7 with the new TypeScript-native client generator.
 - **Import path**: `import { PrismaClient } from "@/generated/prisma/client"` — NOT `@prisma/client`
 - **Driver adapter**: Uses `@prisma/adapter-pg` (pg driver) — the new client has no binary query engine. The `DATABASE_URL` is passed via `new PrismaPg({ connectionString })` in `src/lib/prisma.ts`.
 - **Generated files**: `src/generated/prisma/` is gitignored — regenerate with `npm run prisma:migrate` or `DATABASE_URL=... npx prisma generate`
+- **Regenerate after every schema change**: Any time `prisma/schema.prisma` is modified, run `DATABASE_URL=... npx prisma generate` before writing seed scripts or application code that references new fields — otherwise the TypeScript client won't know about them and seed/runtime calls will fail.
 - **Config file**: `prisma.config.ts` in the project root configures the datasource URL and schema path
 - **`@auth/prisma-adapter`** requires `prisma as any` cast since it still types against `@prisma/client`
