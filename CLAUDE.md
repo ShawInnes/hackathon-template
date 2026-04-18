@@ -42,6 +42,9 @@ These rules have no glob — they load in every context:
 | `genai-llm-integration` | Vercel AI SDK + OpenAI-compatible endpoint only. No other LLM SDKs. |
 | `ui-url-driven-navigation` | All navigable state (tabs, filters, pagination) must be URL-driven for deep linking. |
 | `adding-features` | New routes use `PageLayout` + `auth()`. Protected paths go in `PROTECTED_PATHS`. |
+| `check-before-creating` | Search the codebase before creating any new component, utility, hook, or feature. |
+| `no-overengineering` | No premature abstractions, unnecessary error handling, or dead code. |
+| `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
 
 ### Glob-scoped
 
