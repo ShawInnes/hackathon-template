@@ -163,7 +163,7 @@ services:
       - ..:/workspace:cached
     command: sleep infinity
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/hackday
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/hackathon
     depends_on:
       db:
         condition: service_healthy
@@ -174,7 +174,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hackday
+      POSTGRES_DB: hackathon
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
@@ -195,7 +195,7 @@ Create `.devcontainer/devcontainer.json`:
 
 ```json
 {
-  "name": "Hackday Template",
+  "name": "Hackathon Template",
   "dockerComposeFile": "docker-compose.yml",
   "service": "web",
   "workspaceFolder": "/workspace",
@@ -231,7 +231,7 @@ Create `.env.example`:
 
 ```bash
 # Database — pre-configured for devcontainer. Change for external Postgres.
-DATABASE_URL="postgresql://postgres:postgres@db:5432/hackday"
+DATABASE_URL="postgresql://postgres:postgres@db:5432/hackathon"
 
 # Auth.js — generate with: openssl rand -base64 32
 AUTH_SECRET=""
@@ -723,7 +723,7 @@ export function Navbar({ user }: NavbarProps) {
     <nav className="border-b bg-background">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="font-semibold text-foreground hover:opacity-80">
-          Hackday App
+          Hackathon App
         </Link>
 
         {user ? (
@@ -833,7 +833,7 @@ export function SignInCard() {
     <Card className="w-full max-w-sm">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl">Welcome</CardTitle>
-        <CardDescription>Sign in to access the hackday app</CardDescription>
+        <CardDescription>Sign in to access the hackathon app</CardDescription>
       </CardHeader>
       <CardContent>
         <Button className="w-full" asChild>
@@ -906,8 +906,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Hackday App",
-  description: "Built with the Hackday Template",
+  title: "Hackathon App",
+  description: "Built with the Hackathon Template",
 }
 
 export default function RootLayout({
@@ -1194,7 +1194,7 @@ git commit -m "docs: update CLAUDE.md with project rules and openspec context"
 Create `README.md`:
 
 ```markdown
-# Hackday Template
+# Hackathon Template
 
 A Next.js 16 hackathon starter with Oidc auth, PostgreSQL, and Claude Code built in.
 

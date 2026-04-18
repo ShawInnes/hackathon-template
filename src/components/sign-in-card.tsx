@@ -7,7 +7,7 @@ export function SignInCard() {
     <Card className="w-full max-w-sm">
       <CardHeader className="text-center">
         <h2 className="font-heading text-2xl font-medium leading-snug">Welcome</h2>
-        <CardDescription>Sign in to access the hackday app</CardDescription>
+        <CardDescription>Sign in to access the hackathon app</CardDescription>
       </CardHeader>
       <CardContent>
         <form

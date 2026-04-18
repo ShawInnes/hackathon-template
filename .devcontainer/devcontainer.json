@@ -1,5 +1,5 @@
 {
-  "name": "Hackday Template",
+  "name": "Hackathon Template",
   "dockerComposeFile": "docker-compose.yml",
   "service": "web",
   "workspaceFolder": "/workspace",
