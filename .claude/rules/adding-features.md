@@ -1,6 +1,5 @@
 ---
-description: Conventions for adding new routes, protected paths, and database models — triggers when creating new pages, API routes, or Prisma schema changes
-globs: ["src/app/**", "prisma/schema.prisma", "src/proxy.ts"]
+description: ALWAYS ACTIVE. Conventions for adding new routes (PageLayout + auth()), protecting paths (PROTECTED_PATHS in proxy.ts), and new database models (prisma:migrate).
 ---
 
 # Adding Features
