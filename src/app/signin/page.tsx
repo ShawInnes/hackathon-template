@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { PageLayout } from "@/components/page-layout"
-import { Hero } from "@/components/hero"
+import { SignInCard } from "@/components/sign-in-card"
 
-export default async function HomePage() {
+export default async function SignInPage() {
   const session = await auth()
 
   if (session?.user) {
@@ -12,7 +12,9 @@ export default async function HomePage() {
 
   return (
     <PageLayout user={null}>
-      <Hero />
+      <div className="flex min-h-[calc(100vh-7rem)] items-center justify-center">
+        <SignInCard />
+      </div>
     </PageLayout>
   )
 }

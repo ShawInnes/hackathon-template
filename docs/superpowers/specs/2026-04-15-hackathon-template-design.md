@@ -88,20 +88,20 @@ Docker Compose-based devcontainer with two services:
 
 ## 3. Authentication
 
-Auth.js v5 with the Okta provider using PKCE (no client secret required).
+Auth.js v5 with the Oidc provider using PKCE (no client secret required).
 
-**Why PKCE:** Okta supports Authorization Code Flow with PKCE for public clients. This allows hackathon organisers to issue a `CLIENT_ID` only — no secret to distribute or rotate. The Okta application must be configured as a public client (SPA or Web app with PKCE enabled) by the organiser.
+**Why PKCE:** Oidc supports Authorization Code Flow with PKCE for public clients. This allows hackathon organisers to issue a `CLIENT_ID` only — no secret to distribute or rotate. The Oidc application must be configured as a public client (SPA or Web app with PKCE enabled) by the organiser.
 
 **Required environment variables:**
 ```
-OKTA_CLIENT_ID=           # Issued per-team by hackathon organiser
-OKTA_ISSUER=              # e.g. https://your-org.okta.com
+OIDC_CLIENT_ID=           # Issued per-team by hackathon organiser
+OIDC_ISSUER=              # e.g. https://your-org.oidc.com
 AUTH_SECRET=              # Random string for session signing (teams generate this)
 DATABASE_URL=             # Pre-set in .env.example for devcontainer Postgres
 ```
 
 **Auth.js config (`src/lib/auth.ts`):**
-- Okta provider with `checks: ["pkce", "state"]`, no `clientSecret`
+- Oidc provider with `checks: ["pkce", "state"]`, no `clientSecret`
 - Prisma adapter for session/user persistence
 - Session strategy: database
 
@@ -111,7 +111,7 @@ DATABASE_URL=             # Pre-set in .env.example for devcontainer Postgres
 - Teams add paths to `PROTECTED_PATHS` array to protect new routes — no per-page boilerplate
 
 **Starter pages:**
-- `/` — Public landing page with "Sign in with Okta" button
+- `/` — Public landing page with "Sign in with Oidc" button
 - `/dashboard` — Protected, redirects to `/` if unauthenticated
 
 ---
@@ -151,7 +151,7 @@ Prisma ORM with PostgreSQL.
 **Starter components:**
 - `Navbar` — auth-aware: user avatar + name + sign-out dropdown when signed in; "Sign in" button when not
 - `PageLayout` — consistent page wrapper with navbar
-- `SignInCard` — centred card with "Sign in with Okta" button (used on `/`)
+- `SignInCard` — centred card with "Sign in with Oidc" button (used on `/`)
 - `Dashboard` — protected landing page with user greeting
 
 **Conventions enforced via `CLAUDE.md`:**
@@ -184,7 +184,7 @@ OpenSpec is the primary planning and change management workflow. Superpowers ski
 **Getting started (4 steps):**
 1. Fork the Bitbucket repo
 2. Open in VS Code / Coder workspace — devcontainer starts automatically
-3. Copy `.env.example` → `.env.local`, fill in `OKTA_CLIENT_ID`, `OKTA_ISSUER`, `AUTH_SECRET`
+3. Copy `.env.example` → `.env.local`, fill in `OIDC_CLIENT_ID`, `OIDC_ISSUER`, `AUTH_SECRET`
 4. App running at `localhost:3000` with auth and DB ready
 
 **`README.md` covers:**
@@ -201,4 +201,4 @@ OpenSpec is the primary planning and change management workflow. Superpowers ski
 - No example domain models — teams define their own data layer
 - No CI/CD pipeline — out of scope for a hackathon template
 - No multi-tenancy or team isolation at the app level
-- No email/password auth — Okta only
+- No email/password auth — Oidc only
