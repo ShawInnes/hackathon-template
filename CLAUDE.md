@@ -31,6 +31,18 @@ Use OpenSpec for all structured feature work:
 
 2. **Component reuse.** Before implementing any feature with a UI element, ask: should this be a reusable component in `src/components/`? If the element will appear in more than one place, or if extracting it would make the page cleaner, create a component. Use `/create-nextjs-component` to scaffold it.
 
+3. **URL-driven navigation state.** All navigable UI state must be reflected in the URL to support deep linking and browser history. This includes tabs, filters, sort order, pagination, modal open/close, and any other state a user would expect to share or bookmark.
+
+   **Implementation patterns (in order of preference):**
+   - **Route segments**: Use Next.js dynamic routes (`src/app/settings/[tab]/page.tsx`) for top-level navigation tabs or views. This is the default choice for tabs.
+   - **Search params**: Use `useSearchParams()` for secondary state like filters, sort, pagination, or modal triggers (e.g. `?filter=active&sort=name`). Update via `router.push()` or `router.replace()` — never with `useState` alone.
+   - **Never use client-only state for navigable views.** If switching a tab, opening a panel, or changing a filter does not update the URL, the implementation is wrong. A user copying the URL and pasting it in a new browser tab must land on the same view.
+
+   **Checklist for any UI with switchable views:**
+   - [ ] Does the URL change when the user switches views?
+   - [ ] Does pasting the URL in a new tab restore the correct view?
+   - [ ] Does browser back/forward navigate between views correctly?
+
 ## Adding Features
 
 - New routes: create `src/app/<route>/page.tsx`. Wrap in `<PageLayout>` and call `auth()` at the top.
