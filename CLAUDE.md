@@ -8,6 +8,16 @@ Next.js 16 hackathon project. Stack: Next.js 16 App Router, TypeScript, Tailwind
 
 OIDC provider configured via `AUTH_OIDC_ISSUER` and `AUTH_OIDC_ID`. Profile claims are fetched from the userinfo endpoint in `src/lib/auth.ts`.
 
+## Mandatory Workflow
+
+Follow this sequence for every non-trivial task. Do not skip steps.
+
+1. **Clarify** — Ask questions to resolve ambiguity. Do not assume intent. If the request is clear and specific, state your understanding and confirm before proceeding.
+2. **Plan** — Propose an approach: what changes, which files, what trade-offs. Wait for approval. Use `EnterPlanMode` for multi-file changes.
+3. **Implement** — Execute the approved plan. Do not deviate without re-confirming.
+
+Skip to step 3 only for single-line fixes, typos, or tasks where the user gave explicit, unambiguous instructions.
+
 ## OpenSpec Workflow
 
 Use OpenSpec for all structured feature work:
