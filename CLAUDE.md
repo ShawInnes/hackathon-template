@@ -21,18 +21,29 @@ Use OpenSpec for all structured feature work:
 
 ## Rules Summary
 
-Rules in `.claude/rules/` are auto-loaded when matching files are touched. Key rules:
+Rules in `.claude/rules/` are either always-active or glob-scoped (loaded when matching files are touched).
 
-| Rule | Scope |
-|------|-------|
-| `ui-shadcn-first` | Always use shadcn/ui primitives before custom markup |
-| `ui-component-reuse` | Extract reusable components to `src/components/` |
-| `ui-url-driven-navigation` | All navigable state (tabs, filters, pagination) must be URL-driven for deep linking |
-| `adding-features` | Conventions for new routes, protected paths, database models |
-| `prisma7` | Prisma 7 TypeScript-native client — import from `@/generated/prisma/client` |
-| `authjs-v5` | Auth.js v5 session callback, userinfo endpoint, OIDC gotchas |
-| `genai-llm-integration` | Vercel AI SDK + OpenAI-compatible endpoint only |
-| `devcontainer` | Native binary package workarounds for Linux ARM64 |
+### Always active
+
+These rules have no glob — they load in every context:
+
+| Rule | Constraint |
+|------|-----------|
+| `genai-llm-integration` | Vercel AI SDK + OpenAI-compatible endpoint only. No other LLM SDKs. |
+| `ui-url-driven-navigation` | All navigable state (tabs, filters, pagination) must be URL-driven for deep linking. |
+| `adding-features` | New routes use `PageLayout` + `auth()`. Protected paths go in `PROTECTED_PATHS`. |
+
+### Glob-scoped
+
+These load when editing matching files:
+
+| Rule | Triggers on |
+|------|-------------|
+| `ui-shadcn-first` | `src/components/**`, `src/app/**/*.tsx` |
+| `ui-component-reuse` | `src/components/**`, `src/app/**/*.tsx` |
+| `prisma7` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
+| `authjs-v5` | `src/lib/auth.ts`, `src/types/next-auth.d.ts` |
+| `devcontainer` | `.devcontainer/**`, `package.json` |
 
 ## Available Commands
 

@@ -1,6 +1,5 @@
 ---
-description: Enforces URL-driven navigation state for deep linking — triggers when implementing tabs, filters, pagination, sort controls, modals, or any switchable view
-globs: ["src/app/**/*.tsx", "src/components/**/*.tsx"]
+description: ALWAYS ACTIVE. All navigable UI state (tabs, filters, pagination, modals) must be reflected in the URL for deep linking. Never use client-only state for switchable views.
 ---
 
 # URL-Driven Navigation State

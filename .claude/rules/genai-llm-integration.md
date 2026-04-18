@@ -1,6 +1,5 @@
 ---
-description: GenAI/LLM integration rules — triggers when implementing AI features, chat, completions, embeddings, or any LLM-related functionality
-globs: ["src/app/api/ai/**", "src/app/api/chat/**", "src/lib/ai*", "src/app/**/ai/**"]
+description: GenAI/LLM integration rules — ALWAYS ACTIVE. Only use Vercel AI SDK (ai + @ai-sdk/openai) with OpenAI-compatible endpoint. Never use @anthropic-ai/sdk, openai, @langchain/*, or any other LLM client directly.
 ---
 
 # GenAI / LLM Integration
