@@ -20,6 +20,7 @@ export interface NavbarUser {
 
 interface NavbarProps {
   user: NavbarUser | null
+  authEnabled: boolean
 }
 
 function getInitials(name: string | null): string {
@@ -32,9 +33,7 @@ function getInitials(name: string | null): string {
     .slice(0, 2)
 }
 
-const authEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED === "true"
-
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user, authEnabled }: NavbarProps) {
   return (
     <nav className="border-b bg-background">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">

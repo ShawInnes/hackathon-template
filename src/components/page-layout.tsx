@@ -20,10 +20,12 @@ function toNavbarUser(
   }
 }
 
+const authEnabled = process.env.AUTH_ENABLED === "true"
+
 export function PageLayout({ children, user }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      <Navbar user={toNavbarUser(user)} />
+      <Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />
       <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
     </div>
   )

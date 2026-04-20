@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "{ [ -n \"$DATABASE_URL\" ] || grep -q '^DATABASE_URL' .env 2>/dev/null; } && prisma migrate deploy || echo 'Skipping migrations (DATABASE_URL not configured)'",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -10,7 +11,6 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:deploy": "prisma migrate deploy",
-    "postinstall": "[ -z \"$DATABASE_URL\" ] && echo 'Skipping prisma generate (DATABASE_URL not set)' || prisma generate",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
