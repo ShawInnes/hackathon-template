@@ -1,12 +1,22 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository. Detailed rules are in `.claude/rules/` and are loaded automatically by glob match.
 
 ## Overview
 
-This is a Next.js 16 hackathon project. The stack is: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (OIDC PKCE), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
+Next.js 16 hackathon project. Stack: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (OIDC PKCE), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
 
-The OIDC provider is configured via `AUTH_OIDC_ISSUER` and `AUTH_OIDC_ID`. Many OIDC providers do not include profile claims in the ID token — they are fetched separately from the userinfo endpoint in `src/lib/auth.ts`.
+OIDC provider configured via `AUTH_OIDC_ISSUER` and `AUTH_OIDC_ID`. Profile claims are fetched from the userinfo endpoint in `src/lib/auth.ts`.
+
+## Mandatory Workflow
+
+Follow this sequence for every non-trivial task. Do not skip steps.
+
+1. **Clarify** — Ask questions to resolve ambiguity. Do not assume intent. If the request is clear and specific, state your understanding and confirm before proceeding.
+2. **Plan** — Propose an approach: what changes, which files, what trade-offs. Wait for approval. Use `EnterPlanMode` for multi-file changes.
+3. **Implement** — Execute the approved plan. Do not deviate without re-confirming.
+
+Skip to step 3 only for single-line fixes, typos, or tasks where the user gave explicit, unambiguous instructions.
 
 ## OpenSpec Workflow
 
@@ -19,46 +29,34 @@ Use OpenSpec for all structured feature work:
 | `/opsx:apply [name]` | Implement tasks from a change |
 | `/opsx:archive [name]` | Archive a completed change |
 
-## UI Rules
+## Rules Summary
 
-**These rules are mandatory. Do not skip them.**
+Rules in `.claude/rules/` are either always-active or glob-scoped (loaded when matching files are touched).
 
-1. **shadcn/ui first.** Always use shadcn/ui primitives for UI elements. Before writing any custom markup for buttons, cards, inputs, dialogs, dropdowns, avatars, or separators — install the shadcn component first:
-   ```bash
-   npx shadcn add <component-name>
-   ```
-   Never write raw HTML for elements that shadcn covers.
+### Always active
 
-2. **Component reuse.** Before implementing any feature with a UI element, ask: should this be a reusable component in `src/components/`? If the element will appear in more than one place, or if extracting it would make the page cleaner, create a component. Use `/create-nextjs-component` to scaffold it.
+These rules have no glob — they load in every context:
 
-## Adding Features
+| Rule | Constraint |
+|------|-----------|
+| `genai-llm-integration` | Vercel AI SDK + OpenAI-compatible endpoint only. No other LLM SDKs. |
+| `ui-url-driven-navigation` | All navigable state (tabs, filters, pagination) must be URL-driven for deep linking. |
+| `adding-features` | New routes use `PageLayout` + `auth()`. Protected paths go in `PROTECTED_PATHS`. |
+| `check-before-creating` | Search the codebase before creating any new component, utility, hook, or feature. |
+| `no-overengineering` | No premature abstractions, unnecessary error handling, or dead code. |
+| `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
 
-- New routes: create `src/app/<route>/page.tsx`. Wrap in `<PageLayout>` and call `auth()` at the top.
-- Protect a route: add its path to the `PROTECTED_PATHS` array in `src/proxy.ts`.
-- New database model: add it to `prisma/schema.prisma` below the comment line, then run `npm run prisma:migrate`.
+### Glob-scoped
 
-## Prisma 7
+These load when editing matching files:
 
-This project uses Prisma 7 with the new TypeScript-native client generator.
-
-- **Generator**: `provider = "prisma-client"` with `output = "../src/generated/prisma"` — NOT the old `prisma-client-js`
-- **Import path**: `import { PrismaClient } from "@/generated/prisma/client"` — NOT `@prisma/client`
-- **Driver adapter**: Uses `@prisma/adapter-pg` (pg driver) — the new client has no binary query engine. The `DATABASE_URL` is passed via `new PrismaPg({ connectionString })` in `src/lib/prisma.ts`.
-- **Generated files**: `src/generated/prisma/` is gitignored — regenerate with `npm run prisma:migrate` or `DATABASE_URL=... npx prisma generate`
-- **Config file**: `prisma.config.ts` in the project root configures the datasource URL and schema path
-- **`@auth/prisma-adapter`** requires `prisma as any` cast since it still types against `@prisma/client`
-
-## Auth.js v5
-
-- **Session callback is required** to expose `user.id`: without it, `session.user.id` is always undefined
-- **TypeScript types**: `src/types/next-auth.d.ts` augments the session to include `user.id`
-- **`profile()` on custom OIDC providers is unreliable** in Auth.js v5 — do not rely on it. Profile data is fetched manually in the `signIn` callback instead.
-- **Userinfo endpoint**: The `signIn` callback in `src/lib/auth.ts` manually calls the userinfo endpoint (discovered from `.well-known/openid-configuration`) using the `access_token` and writes the result directly to the database.
-
-## Devcontainer
-
-- The devcontainer mounts the host `node_modules` via volume. Native binary packages installed on macOS won't have their Linux ARM64 variants present in the container.
-- Fix: add the Linux ARM64 package as an explicit `optionalDependencies` entry (e.g. `lightningcss-linux-arm64-gnu`). npm will then include it in `package-lock.json` and install it inside the container.
+| Rule | Triggers on |
+|------|-------------|
+| `ui-shadcn-first` | `src/components/**`, `src/app/**/*.tsx` |
+| `ui-component-reuse` | `src/components/**`, `src/app/**/*.tsx` |
+| `prisma7` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
+| `authjs-v5` | `src/lib/auth.ts`, `src/types/next-auth.d.ts` |
+| `devcontainer` | `.devcontainer/**`, `package.json` |
 
 ## Available Commands
 
