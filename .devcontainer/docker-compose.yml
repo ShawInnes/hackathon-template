@@ -5,7 +5,7 @@ services:
       - ..:/workspace:cached
     command: sleep infinity
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/hackday
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/hackathon
     depends_on:
       db:
         condition: service_healthy
@@ -16,7 +16,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hackday
+      POSTGRES_DB: hackathon
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:

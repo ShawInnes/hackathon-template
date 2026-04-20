@@ -10,16 +10,24 @@ export function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith(path)
   )
 
-  if (isProtected) {
-    // Optimistic check: look for Auth.js session cookie.
-    // Full session validation happens inside each protected page via auth().
-    const sessionCookie =
-      request.cookies.get("authjs.session-token") ||
-      request.cookies.get("__Secure-authjs.session-token")
+  if (!isProtected) return
 
-    if (!sessionCookie) {
+  if (process.env.NEXT_PUBLIC_AUTH_ENABLED !== "true") {
+    // Dev mode: check for dev-session cookie set by mock signIn.
+    if (!request.cookies.get("dev-session")) {
       return NextResponse.redirect(new URL("/", request.url))
     }
+    return
+  }
+
+  // Optimistic check: look for Auth.js session cookie.
+  // Full session validation happens inside each protected page via auth().
+  const sessionCookie =
+    request.cookies.get("authjs.session-token") ||
+    request.cookies.get("__Secure-authjs.session-token")
+
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/signin", request.url))
   }
 }
 

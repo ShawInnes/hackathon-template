@@ -1,15 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls -la /Users/shaw/devops/hackday-template/.env*)",
+      "Bash(ls -la /Users/shaw/devops/hackathon-template/.env*)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version','?'\\)\\)\")",
-      "Bash(ls /Users/shaw/devops/hackday-template/*.env*)",
-      "Bash(ls /Users/shaw/devops/hackday-template/.env*)",
+      "Bash(ls /Users/shaw/devops/hackathon-template/*.env*)",
+      "Bash(ls /Users/shaw/devops/hackathon-template/.env*)",
       "Bash(DATABASE_URL=\"postgresql://localhost/dummy\" npx prisma *)",
-      "Bash(grep -n \"accelerateUrl\\\\|PrismaClientOptions\\\\|datasourceUrl\" /Users/shaw/devops/hackday-template/src/generated/prisma/internal/*.ts)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version'\\)\\); print\\(list\\(d.get\\('optionalDependencies', {}\\).keys\\(\\)\\)\\)\")"
+      "Bash(grep -n \"accelerateUrl\\\\|PrismaClientOptions\\\\|datasourceUrl\" /Users/shaw/devops/hackathon-template/src/generated/prisma/internal/*.ts)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version'\\)\\); print\\(list\\(d.get\\('optionalDependencies', {}\\).keys\\(\\)\\)\\)\")",
+      "Bash(openspec instructions *)",
+      "Bash(openspec status *)"
     ]
   }
 }

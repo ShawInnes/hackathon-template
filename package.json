@@ -1,5 +1,5 @@
 {
-  "name": "hackday-template",
+  "name": "hackathon-template",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:deploy": "prisma migrate deploy",
-    "postinstall": "prisma generate",
+    "postinstall": "[ -z \"$DATABASE_URL\" ] && echo 'Skipping prisma generate (DATABASE_URL not set)' || prisma generate",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest"
   },
