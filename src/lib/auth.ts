@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-const AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_ENABLED === "true"
+const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 
 // Cache the userinfo endpoint URL from OIDC discovery to avoid fetching it on every sign-in.
 let cachedUserinfoUrl: string | null = null

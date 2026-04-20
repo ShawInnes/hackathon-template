@@ -5,6 +5,8 @@ import type { NextRequest } from "next/server"
 // Pages also call auth() directly — this is an optimistic UX redirect only.
 const PROTECTED_PATHS = ["/dashboard"]
 
+const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
+
 export function proxy(request: NextRequest) {
   const isProtected = PROTECTED_PATHS.some((path) =>
     request.nextUrl.pathname.startsWith(path)
@@ -12,7 +14,7 @@ export function proxy(request: NextRequest) {
 
   if (!isProtected) return
 
-  if (process.env.NEXT_PUBLIC_AUTH_ENABLED !== "true") {
+  if (!AUTH_ENABLED) {
     // Dev mode: check for dev-session cookie set by mock signIn.
     if (!request.cookies.get("dev-session")) {
       return NextResponse.redirect(new URL("/", request.url))
