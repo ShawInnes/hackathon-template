@@ -67,6 +67,7 @@ Implement tasks from an OpenSpec change.
    - Make the code changes required
    - Keep changes minimal and focused
    - Mark task complete in the tasks file: `- [ ]` → `- [x]`
+   - **Commit the changes** — stage specific files and commit using conventional commit format (e.g., `feat: add user profile endpoint`). Do not batch commits across tasks; each task gets its own commit.
    - Continue to next task
 
    **Pause if:**
