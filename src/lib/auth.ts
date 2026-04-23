@@ -36,11 +36,14 @@ if (AUTH_ENABLED) {
         // PKCE flow — no client secret required.
         // The OIDC app must be configured as a public client with PKCE enabled.
         checks: ["pkce", "state"],
+        // Instructs oauth4webapi to send client_id in the POST body only,
+        // without any Authorization header — required for public PKCE clients.
+        client: { token_endpoint_auth_method: "none" },        
         authorization: { params: { scope: "openid email profile" } },
       },
     ],
     session: { strategy: "database" },
-    debug: process.env.NODE_ENV === "development",
+    // debug: process.env.NODE_ENV === "development",
     callbacks: {
       session({ session, user }) {
         session.user.id = user.id
