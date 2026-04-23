@@ -46,6 +46,7 @@ These rules have no glob — they load in every context:
 | `no-overengineering` | No premature abstractions, unnecessary error handling, or dead code. |
 | `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
 | `commit-after-feature` | Commit immediately after completing any feature, fix, or meaningful change. |
+| `dev-server` | Don't run `npm run build` unless necessary. `npm run dev` runs in tmux — check before starting. |
 
 ### Glob-scoped
 
