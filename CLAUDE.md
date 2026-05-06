@@ -65,6 +65,9 @@ These load when editing matching files:
 - `npm run dev` — start dev server
 - `npm run build` — production build
 - `npm run test` — run tests
-- `npm run prisma:migrate` — create a new migration (requires running DB)
+- `npm run prisma:migrate` — create and apply a new migration (requires running DB); also regenerates the client
+- `npm run prisma:generate` — regenerate the Prisma client only (no migration)
+- `npm run prisma:seed` — run the seed script to populate required reference data
 - `npm run prisma:studio` — open Prisma Studio (database browser)
-- `DATABASE_URL=... npx prisma generate` — regenerate Prisma client (no DB needed)
+
+After any change to `prisma/schema.prisma` or `prisma/migrations/`, run `prisma:migrate` → `prisma:generate` (if needed) → `prisma:seed`. See `.claude/rules/prisma7.md` for the full workflow.
