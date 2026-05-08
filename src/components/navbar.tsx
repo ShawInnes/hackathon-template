@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { signOut } from "next-auth/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,9 +62,11 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
           ) : (
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">{user.name}</span>
-              <Link href="/api/auth/dev-signout" className={buttonVariants({ size: "sm" })}>
-                Sign out
-              </Link>
+              <form action="/api/auth/dev-signout" method="post">
+                <Button type="submit" size="sm">
+                  Sign out
+                </Button>
+              </form>
             </div>
           )
         ) : (
