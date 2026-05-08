@@ -3,7 +3,7 @@
 # after the build step.
 #
 # Usage:
-#   APP_NAME=t1-myapp \
+#   APP_NAME=myapp \
 #   IMAGE_NAME=ghcr.io/org/myapp:v1.0.0 \
 #   BASE_DOMAIN=example.com \
 #     ./render.sh
@@ -14,7 +14,6 @@ set -euo pipefail
 : "${IMAGE_NAME:?IMAGE_NAME is required}"
 : "${BASE_DOMAIN:?BASE_DOMAIN is required}"
 
-APP_NAME="${APP_NAME#t1-}"
 export APP_NAME
 export IMAGE="${IMAGE_NAME}"
 export HOST_NAME="${APP_NAME}.${BASE_DOMAIN}"
