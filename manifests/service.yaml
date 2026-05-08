@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APP_NAME}
+  namespace: app-${APP_NAME}
+  labels:
+    app.kubernetes.io/name: ${APP_NAME}
+    app.kubernetes.io/component: service
+    app: ${APP_NAME}
+spec:
+  selector:
+    app: ${APP_NAME}
+  ports:
+    - name: web
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+  type: ClusterIP
