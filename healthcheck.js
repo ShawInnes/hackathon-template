@@ -3,7 +3,7 @@ const http = require('http');
 
 const options = {
   host: 'localhost',
-  port: process.env.PORT || 8080,
+  port: process.env.PORT || 3000,
   path: '/',
   timeout: 2000,
 };

@@ -1,7 +1,7 @@
 apiVersion: ecr.aws.m.upbound.io/v1beta1
 kind: Repository
 metadata:
-  name: ${APP_NAME}
+  name: ${IMAGE_NAME}
   namespace: app-${APP_NAME}
   annotations:
     crossplane.io/external-name: ${APP_NAME}

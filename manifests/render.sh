@@ -4,7 +4,8 @@
 #
 # Usage:
 #   APP_NAME=myapp \
-#   IMAGE_NAME=ghcr.io/org/myapp:v1.0.0 \
+#   IMAGE_NAME=myapp \
+#   REPOSITORY=ghcr.io/org/myapp:v1.0.0 \
 #   BASE_DOMAIN=example.com \
 #     ./render.sh
 
@@ -12,17 +13,19 @@ set -euo pipefail
 
 : "${APP_NAME:?APP_NAME is required}"
 : "${IMAGE_NAME:?IMAGE_NAME is required}"
+: "${REPOSITORY:?REPOSITORY is required}"
 : "${BASE_DOMAIN:?BASE_DOMAIN is required}"
 
 export APP_NAME
-export IMAGE="${IMAGE_NAME}"
+export IMAGE_NAME
+export REPOSITORY
 export HOST_NAME="${APP_NAME}.${BASE_DOMAIN}"
 
 cd "$(dirname "$0")"
 
 # Whitelist vars so nginx-style placeholders ($http_*) survive untouched.
 for f in *.yaml; do
-  envsubst '${APP_NAME} ${IMAGE} ${HOST_NAME}' < "$f" > "$f.tmp"
+  envsubst '${APP_NAME} ${REGISTRY} ${IMAGE_NAME} ${HOST_NAME}' < "$f" > "$f.tmp"
   mv "$f.tmp" "$f"
 done
 
