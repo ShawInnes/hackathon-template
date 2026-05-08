@@ -51,11 +51,11 @@ COPY --from=builder --chown=nextjs:nextjs /app/healthcheck.js ./healthcheck.js
 USER nextjs
 
 # Expose port
-EXPOSE 8080
+EXPOSE 3000
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Health check
