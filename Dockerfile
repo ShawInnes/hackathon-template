@@ -50,10 +50,12 @@ COPY --from=builder --chown=nextjs:nextjs /app/healthcheck.js ./healthcheck.js
 # Prisma assets needed at runtime for `migrate deploy`
 COPY --from=builder --chown=nextjs:nextjs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nextjs /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder --chown=nextjs:nextjs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nextjs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nextjs /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
-COPY --from=builder --chown=nextjs:nextjs /app/node_modules/dotenv ./node_modules/dotenv
+
+# Install Prisma CLI fresh — npm creates .bin/prisma as a proper symlink, so the
+# WASM loader resolves prisma_schema_build_bg.wasm correctly. Pinned to match
+# package.json; bump together when upgrading prisma.
+RUN npm install --no-save --no-audit --no-fund prisma@^7.7.0 dotenv \
+    && chown -R nextjs:nextjs node_modules
 
 # Entrypoint script (runs migrations before starting the app)
 COPY --chown=nextjs:nextjs docker-entrypoint.sh ./docker-entrypoint.sh
