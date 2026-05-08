@@ -43,7 +43,7 @@ if (AUTH_ENABLED) {
       },
     ],
     session: { strategy: "database" },
-    // debug: process.env.NODE_ENV === "development",
+    debug: process.env.NODE_ENV === "development",
     callbacks: {
       session({ session, user }) {
         session.user.id = user.id
