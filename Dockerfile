@@ -47,6 +47,18 @@ COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 COPY --from=builder --chown=nextjs:nextjs /app/healthcheck.js ./healthcheck.js
 
+# Prisma assets needed at runtime for `migrate deploy`
+COPY --from=builder --chown=nextjs:nextjs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nextjs /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder --chown=nextjs:nextjs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nextjs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nextjs /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder --chown=nextjs:nextjs /app/node_modules/dotenv ./node_modules/dotenv
+
+# Entrypoint script (runs migrations before starting the app)
+COPY --chown=nextjs:nextjs docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 # Switch to non-root user
 USER nextjs
 
@@ -62,8 +74,8 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node healthcheck.js || exit 1
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
+# Use dumb-init to handle signals properly, then run migrations via entrypoint
+ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
 
 # Start the application
 CMD ["node", "server.js"]
