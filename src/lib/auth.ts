@@ -49,7 +49,7 @@ if (AUTH_ENABLED) {
         checks: ["pkce", "state"],
         // Instructs oauth4webapi to send client_id in the POST body only,
         // without any Authorization header — required for public PKCE clients.
-        client: { token_endpoint_auth_method: "none" },        
+        client: { token_endpoint_auth_method: "none" },
         authorization: { params: { scope: "openid email profile" } },
       },
     ],
