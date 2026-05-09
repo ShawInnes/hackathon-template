@@ -13,6 +13,9 @@ This project uses Prisma 7 with the new TypeScript-native client generator.
 - **Generated files**: `src/generated/prisma/` is gitignored — regenerate with `npm run prisma:migrate` or `DATABASE_URL=... npx prisma generate`
 - **Config file**: `prisma.config.ts` in the project root configures the datasource URL and schema path
 - **`@auth/prisma-adapter`** requires `prisma as any` cast since it still types against `@prisma/client`
+- **Seed script**: `prisma/seed.ts` runs via `npm run prisma:seed`. Add reference/lookup data, initial admin users, or any rows required for the app to boot here. Use `upsert` so the script is idempotent. Instantiate the client with the `PrismaPg` adapter — same pattern as `src/lib/prisma.ts`.
+- **Zod generator**: `zod-prisma-types` runs alongside `prisma-client` and emits Zod schemas to `src/generated/zod/`. Import model schemas from there (`import { UserSchema } from "@/generated/zod"`) instead of hand-writing Zod for DB rows. Hand-written DTO schemas in `src/lib/schemas/` extend or `pick` from these.
+- **Schema linter**: `prisma-lint` runs in pre-commit and via `npm run lint:prisma`. Config in `.prismalintrc.json`. Do not bypass — fix violations or narrow the rule with justification.
 
 ## Mandatory workflow after any `prisma/schema.prisma` or migration change
 
