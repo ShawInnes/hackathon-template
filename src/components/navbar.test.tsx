@@ -22,12 +22,22 @@ describe("Navbar", () => {
   })
 
   it("renders user name when authenticated", () => {
-    render(<Navbar user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }} authEnabled={true} />)
+    render(
+      <Navbar
+        user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }}
+        authEnabled={true}
+      />,
+    )
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument()
   })
 
   it("does not show sign-in button when authenticated", () => {
-    render(<Navbar user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }} authEnabled={true} />)
+    render(
+      <Navbar
+        user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }}
+        authEnabled={true}
+      />,
+    )
     expect(screen.queryByText(/sign in/i)).not.toBeInTheDocument()
   })
 })

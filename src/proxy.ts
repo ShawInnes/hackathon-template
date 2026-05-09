@@ -9,9 +9,7 @@ const PROTECTED_PATHS = ["/dashboard"]
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 
 export function proxy(request: NextRequest) {
-  const isProtected = PROTECTED_PATHS.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  )
+  const isProtected = PROTECTED_PATHS.some((path) => request.nextUrl.pathname.startsWith(path))
 
   if (!isProtected) return
 
