@@ -17,11 +17,11 @@ export default function Error({
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-8 text-center">
       <h2 className="text-2xl font-semibold">Something went wrong</h2>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {error.message || "An unexpected error occurred."}
       </p>
       {error.digest && (
-        <p className="font-mono text-xs text-muted-foreground">ref: {error.digest}</p>
+        <p className="text-muted-foreground font-mono text-xs">ref: {error.digest}</p>
       )}
       <Button onClick={reset}>Try again</Button>
     </div>
