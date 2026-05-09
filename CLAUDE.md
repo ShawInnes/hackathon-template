@@ -29,6 +29,20 @@ Use OpenSpec for all structured feature work:
 | `/opsx:apply [name]` | Implement tasks from a change |
 | `/opsx:archive [name]` | Archive a completed change |
 
+## Helper Skills
+
+Invoke these skills (via the `Skill` tool) for the patterns below. Each is a self-contained guide with install commands, code patterns, and verification checklist.
+
+| Skill | Use when |
+|-------|----------|
+| `zod-schemas` | Adding a DTO, server action input, env var, or external API response shape |
+| `tanstack-table` | Building a data table with sort/filter/pagination/selection |
+| `tanstack-form` | Building a form with 3+ fields or non-trivial validation |
+| `tanstack-query` | Adding client-side caching, mutations with optimistic UI, polling, or infinite scroll |
+| `code-quality` | Configuring or fixing Prettier / ESLint / lint-staged / pre-commit hooks |
+| `secrets-scanning` | Setting up gitleaks, recovering from a leaked secret, adding new env vars |
+| `create-nextjs-component` | Creating any new React component |
+
 ## Rules Summary
 
 Rules in `.claude/rules/` are either always-active or glob-scoped (loaded when matching files are touched).
@@ -47,6 +61,9 @@ These rules have no glob — they load in every context:
 | `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
 | `commit-after-feature` | Commit immediately after completing any feature, fix, or meaningful change. |
 | `dev-server` | Don't run `npm run build` unless necessary. `npm run dev` runs in tmux — check before starting. |
+| `zod-schemas` | All DTOs, server action inputs, env vars, and external API responses must be validated with Zod. Types derived via `z.infer`. |
+| `code-quality` | Prettier + ESLint + lint-staged + simple-git-hooks + ts-reset. Pre-commit hook is mandatory — never `--no-verify`. |
+| `secrets-handling` | No hardcoded secrets. gitleaks runs pre-commit. Env vars only, validated via Zod at module load. |
 
 ### Glob-scoped
 
@@ -56,9 +73,12 @@ These load when editing matching files:
 |------|-------------|
 | `ui-shadcn-first` | `src/components/**`, `src/app/**/*.tsx` |
 | `ui-component-reuse` | `src/components/**`, `src/app/**/*.tsx` |
-| `prisma7` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
+| `prisma` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
 | `authjs-v5` | `src/lib/auth.ts`, `src/types/next-auth.d.ts` |
 | `devcontainer` | `.devcontainer/**`, `package.json` |
+| `tanstack-table` | `src/components/**`, `src/app/**/*.tsx` — use for tables with sort/filter/pagination |
+| `tanstack-form` | `src/components/**`, `src/app/**/*.tsx` — use for forms with 3+ fields or non-trivial validation |
+| `tanstack-query` | `src/components/**`, `src/app/**/*.tsx`, `src/hooks/**` — only when server components are insufficient |
 
 ## Available Commands
 
@@ -70,4 +90,4 @@ These load when editing matching files:
 - `npm run prisma:seed` — run the seed script to populate required reference data
 - `npm run prisma:studio` — open Prisma Studio (database browser)
 
-After any change to `prisma/schema.prisma` or `prisma/migrations/`, run `prisma:migrate` → `prisma:generate` (if needed) → `prisma:seed`. See `.claude/rules/prisma7.md` for the full workflow.
+After any change to `prisma/schema.prisma` or `prisma/migrations/`, run `prisma:migrate` → `prisma:generate` (if needed) → `prisma:seed`. See `.claude/rules/prisma.md` for the full workflow.

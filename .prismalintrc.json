@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "forbid-required-ignored-field": ["error"],
+    "enum-name-pascal-case": ["error"],
+    "model-name-pascal-case": ["error"],
+    "require-field-type": [
+      "error",
+      {
+        "require": [
+          { "ifName": "id", "type": "String" },
+          { "ifName": "/At$/", "type": "DateTime" }
+        ]
+      }
+    ]
+  }
+}
