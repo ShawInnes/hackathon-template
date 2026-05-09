@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 // Add paths that require authentication here.
-// Pages also call auth() directly — this is an optimistic UX redirect only.
+// Cookie presence check below is optimistic — no signature verification.
+// Every protected page MUST also call auth() server-side (see dashboard/page.tsx).
 const PROTECTED_PATHS = ["/dashboard"]
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
