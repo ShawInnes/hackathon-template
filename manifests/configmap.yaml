@@ -9,3 +9,4 @@ metadata:
 data:
   APP_NAME: "${APP_NAME}"
   NAMESPACE: "app-${APP_NAME}"
+  AUTH_URL: "https://${HOST_NAME}"
