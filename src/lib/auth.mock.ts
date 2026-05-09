@@ -28,7 +28,7 @@ export async function signIn() {
   })
   const cookieStore = await cookies()
   cookieStore.set("dev-session", "1", { httpOnly: true, path: "/" })
-  redirect("/dashboard")
+  redirect("/")
 }
 
 export async function signOut(options?: { redirectTo?: string }) {

@@ -3,8 +3,9 @@ import type { NextRequest } from "next/server"
 
 // Add paths that require authentication here.
 // Cookie presence check below is optimistic — no signature verification.
-// Every protected page MUST also call auth() server-side (see dashboard/page.tsx).
-const PROTECTED_PATHS = ["/dashboard"]
+// Every protected page MUST also call auth() server-side.
+// Note: "/" is protected at the page level (auth() + redirect) since startsWith("/") would match all paths.
+const PROTECTED_PATHS = ["/profile"]
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 

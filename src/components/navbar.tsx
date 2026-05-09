@@ -57,6 +57,7 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem render={<Link href="/profile" />}>Profile</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOutAction()}>Sign out</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
