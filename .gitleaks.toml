@@ -1,0 +1,17 @@
+title = "Gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist"
+paths = [
+  '''(.*?)(jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot|lock|map)$''',
+  '''node_modules''',
+  '''\.next''',
+  '''src/generated''',
+  '''package-lock\.json''',
+]
+regexes = [
+  '''DATABASE_URL=postgres(ql)?://[a-z]+:[a-z]+@(localhost|127\.0\.0\.1|db|postgres)''',
+]

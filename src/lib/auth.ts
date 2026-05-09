@@ -3,15 +3,26 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { z } from "zod"
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 
-// Cache the userinfo endpoint URL from OIDC discovery to avoid fetching it on every sign-in.
+const DiscoverySchema = z.object({ userinfo_endpoint: z.string().url().optional() }).passthrough()
+const UserinfoSchema = z
+  .object({
+    name: z.string().optional(),
+    preferred_username: z.string().optional(),
+    email: z.string().optional(),
+    picture: z.string().optional(),
+  })
+  .passthrough()
+
 let cachedUserinfoUrl: string | null = null
 async function getUserinfoUrl(issuer: string): Promise<string | null> {
   if (cachedUserinfoUrl) return cachedUserinfoUrl
   try {
-    const discovery = await fetch(`${issuer}/.well-known/openid-configuration`).then((r) => r.json())
+    const raw = await fetch(`${issuer}/.well-known/openid-configuration`).then((r) => r.json())
+    const discovery = DiscoverySchema.parse(raw)
     cachedUserinfoUrl = discovery.userinfo_endpoint ?? null
   } catch {
     console.error("[auth] OIDC discovery fetch failed")
@@ -53,9 +64,10 @@ if (AUTH_ENABLED) {
           try {
             const userinfoUrl = await getUserinfoUrl(process.env.AUTH_OIDC_ISSUER!)
             if (userinfoUrl) {
-              const userinfo = await fetch(userinfoUrl, {
+              const raw = await fetch(userinfoUrl, {
                 headers: { Authorization: `Bearer ${account.access_token}` },
               }).then((r) => r.json())
+              const userinfo = UserinfoSchema.parse(raw)
 
               if (process.env.NODE_ENV === "development") {
                 console.log("[auth] userinfo:", JSON.stringify(userinfo, null, 2))
