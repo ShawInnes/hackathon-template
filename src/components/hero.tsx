@@ -1,6 +1,3 @@
-import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
-
 export function Hero() {
   return (
     <div className="flex min-h-[calc(100vh-7rem)] flex-col items-center justify-center text-center">
@@ -11,5 +8,5 @@ export function Hero() {
         Build something great.
       </p>
     </div>
-  )
+  );
 }
