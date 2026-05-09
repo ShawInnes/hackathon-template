@@ -5,8 +5,8 @@ vi.mock("@/lib/auth", () => ({
   auth: vi.fn(),
 }))
 
-vi.mock("next-auth/react", () => ({
-  signOut: vi.fn(),
+vi.mock("@/lib/actions/sign-out", () => ({
+  signOutAction: vi.fn(),
 }))
 
 vi.mock("next/link", () => ({

@@ -36,9 +36,9 @@ function getInitials(name: string | null): string {
 
 export function Navbar({ user, authEnabled }: NavbarProps) {
   return (
-    <nav className="border-b bg-background">
+    <nav className="bg-background border-b">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="font-semibold text-foreground hover:opacity-80">
+        <Link href="/" className="text-foreground font-semibold hover:opacity-80">
           Hackathon App
         </Link>
 
@@ -47,7 +47,7 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
           {user ? (
             authEnabled ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-muted outline-none">
+                <DropdownMenuTrigger className="hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1 text-sm outline-none">
                   <Avatar size="sm">
                     {user.image && <AvatarImage src={user.image} alt={user.name ?? "User"} />}
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
@@ -57,15 +57,15 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+                  <DropdownMenuItem onClick={() => signOutAction()}>
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">{user.name}</span>
-                <form action="/api/auth/dev-signout" method="post">
+                <span className="text-muted-foreground text-sm">{user.name}</span>
+                <form action={signOutAction}>
                   <Button type="submit" size="sm">
                     Sign out
                   </Button>
