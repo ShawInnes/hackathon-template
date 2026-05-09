@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { signOut } from "next-auth/react"
+import { signOutAction } from "@/lib/actions/sign-out"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export interface NavbarUser {
   name: string | null
@@ -41,39 +42,42 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
           Hackathon App
         </Link>
 
-        {user ? (
-          authEnabled ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-muted outline-none">
-                <Avatar size="sm">
-                  {user.image && <AvatarImage src={user.image} alt={user.name ?? "User"} />}
-                  <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                </Avatar>
-                <span>{user.name}</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          {user ? (
+            authEnabled ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-muted outline-none">
+                  <Avatar size="sm">
+                    {user.image && <AvatarImage src={user.image} alt={user.name ?? "User"} />}
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                  </Avatar>
+                  <span>{user.name}</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">{user.name}</span>
+                <form action="/api/auth/dev-signout" method="post">
+                  <Button type="submit" size="sm">
+                    Sign out
+                  </Button>
+                </form>
+              </div>
+            )
           ) : (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{user.name}</span>
-              <form action="/api/auth/dev-signout" method="post">
-                <Button type="submit" size="sm">
-                  Sign out
-                </Button>
-              </form>
-            </div>
-          )
-        ) : (
-          <Link href="/signin" className={buttonVariants({ size: "sm" })}>
-            Sign in
-          </Link>
-        )}
+            <Link href="/signin" className={buttonVariants({ size: "sm" })}>
+              Sign in
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   )
