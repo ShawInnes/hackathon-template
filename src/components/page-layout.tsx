@@ -9,9 +9,7 @@ interface PageLayoutProps {
   } | null
 }
 
-function toNavbarUser(
-  user: PageLayoutProps["user"]
-): NavbarUser | null {
+function toNavbarUser(user: PageLayoutProps["user"]): NavbarUser | null {
   if (!user) return null
   return {
     name: user.name ?? null,
@@ -24,7 +22,7 @@ const authEnabled = process.env.AUTH_ENABLED === "true"
 
 export function PageLayout({ children, user }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />
       <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
     </div>

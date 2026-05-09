@@ -17,9 +17,7 @@ export default async function ProfilePage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {user.name ?? user.email}
-          </p>
+          <p className="text-muted-foreground">Welcome back, {user.name ?? user.email}</p>
         </div>
 
         <Card>
