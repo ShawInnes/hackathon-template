@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${APP_NAME}
+  namespace: app-${APP_NAME}
+  labels:
+    app.kubernetes.io/name: ${APP_NAME}
+    app.kubernetes.io/component: ingress
+    dns-managed-by: external-dns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: aihub.techlab.onespresso.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${APP_NAME}
+                port:
+                  number: 3000
