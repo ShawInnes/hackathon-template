@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "{ [ -n \"$DATABASE_URL\" ] || grep -q '^DATABASE_URL' .env 2>/dev/null; } && prisma migrate deploy || echo 'Skipping migrations (DATABASE_URL not configured)'",
+    "predev": "bash scripts/ensure-db.sh && prisma migrate deploy",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
