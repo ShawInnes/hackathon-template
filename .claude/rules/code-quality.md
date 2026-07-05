@@ -32,7 +32,7 @@ The project enforces formatting, linting, and type safety through a single pre-c
 - **Never run `--no-verify` on commits** — pre-commit must pass. If a hook fails, fix the cause; never bypass.
 - **Never disable an ESLint rule inline** without a one-line comment explaining why. Prefer fixing the code.
 - **Never edit `src/generated/`** — it's regenerated.
-- **Do not commit `.env*` files** — gitleaks blocks most patterns; treat any secret-like value as a hard error.
+- **Do not commit real env files** (`.env`, `.env.local`, `*.local`) — gitleaks blocks most patterns; treat any secret-like value as a hard error. **`.env.example` is the exception**: it is tracked and must be committed. Edit it freely, but only with placeholder values — never a real secret. Keep it in sync with `src/lib/env.ts` (see `secrets-handling`).
 - **`as any` and `@ts-ignore`** — both forbidden. Use `@ts-expect-error` with a comment if a genuine type-system gap exists.
 - **`ts-reset` is loaded once** in `src/ts-reset.d.ts`. Do not import it elsewhere; it's global.
 

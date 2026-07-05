@@ -12,7 +12,7 @@ Zod is the project's runtime + compile-time type system for data crossing any bo
 - **Server actions** — parse the input argument before touching the database.
 - **External API responses** — fetch responses are typed `unknown`; pipe them through Zod before use.
 - **Form submissions** — share the same schema between client form validation and server-side parsing (see `tanstack-form` rule).
-- **Environment variables** — parse `process.env` once at module load in `src/lib/env.ts`.
+- **Environment variables** — parse `process.env` once at module load in `src/lib/env.ts`. When adding a var here, also add it to `.env.example` and the README env table in the same change (see `secrets-handling`).
 
 ## When to skip
 

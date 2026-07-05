@@ -8,7 +8,16 @@ description: Secret-handling rules — gitleaks runs pre-commit, no secrets in c
 
 - **Never hardcode** API keys, tokens, passwords, OIDC client secrets, or DB credentials. Use env vars only.
 - **Never commit `.env`, `.env.local`, or any `*.local` file.** They are gitignored — if you see one tracked, that is a bug.
+- **`.env.example` is the one env file that IS committed.** It is tracked and safe to edit — it documents every variable the app reads, with placeholder values only (never a real secret). Editing it is expected, not a violation of the rule above.
 - **Validate env vars with Zod** at module load (`src/lib/env.ts`) — see `zod-schemas` rule.
+
+## Introducing a new environment variable
+
+Whenever you add, rename, or remove an env var, update all three in the **same change** — an out-of-sync `.env.example` is a bug:
+
+1. **`src/lib/env.ts`** — add it to the Zod `EnvSchema` (required or `.optional()`), so boot-time validation covers it.
+2. **`.env.example`** — add the key with a placeholder / comment describing what it is (no real secret).
+3. **`README.md`** — add a row to the env var table under **Getting started** so a new developer knows where to get the value.
 - **No secrets in logs.** Do not `console.log(process.env.*)` for any sensitive var.
 - **No secrets in error messages** that bubble to the client.
 
