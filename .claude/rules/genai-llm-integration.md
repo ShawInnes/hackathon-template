@@ -6,7 +6,8 @@ description: GenAI/LLM integration rules — ALWAYS ACTIVE. Only use Vercel AI S
 
 All generative AI features must use the [Vercel AI SDK](https://ai-sdk.dev/) with the OpenAI-compatible provider.
 
-- **Package**: `ai` (core) + `@ai-sdk/openai` (provider) + `@ai-sdk/react` (hooks)
+- **Package**: `ai` (core) + `@ai-sdk/openai` (provider) + `@ai-sdk/react` (hooks). Not bundled in the template — add per feature: `npm install ai @ai-sdk/openai @ai-sdk/react`.
+- **Verified against**: the API surface documented below ("v4" — `DefaultChatTransport`, `convertToModelMessages` returning a Promise, `useChat({ transport })`) was last verified against `ai@7.0.15` / `@ai-sdk/openai@4.x`. The `ai` npm package major (7) and the documented API generation ("v4") are numbered differently — do not confuse them. This SDK's API churns across releases; if you install a newer version and the hooks/route signatures below don't match, re-verify against the installed version's `.d.ts` and update this rule.
 - **Environment variables**: `OPENAI_BASE_URL` (endpoint URL) and `OPENAI_API_KEY` (API key). These are already configured in the deployment environment — do not hardcode values.
 - **Provider setup**: Use `createOpenAI` from `@ai-sdk/openai` pointed at the compatible endpoint:
   ```ts
