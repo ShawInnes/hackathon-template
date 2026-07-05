@@ -59,6 +59,7 @@ These rules have no glob — they load in every context:
 | `check-before-creating` | Search the codebase before creating any new component, utility, hook, or feature. |
 | `no-overengineering` | No premature abstractions, unnecessary error handling, or dead code. |
 | `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
+| `no-orphan-features` | Every feature reachable via UI nav from `/`. Replace template placeholders (dashboard, navbar, README, branding) during initial implementation; keep README current after every feature. |
 | `commit-after-feature` | Commit immediately after completing any feature, fix, or meaningful change. |
 | `dev-server` | Don't run `npm run build` unless necessary. `npm run dev` runs in tmux — check before starting. |
 | `zod-schemas` | All DTOs, server action inputs, env vars, and external API responses must be validated with Zod. Types derived via `z.infer`. |
