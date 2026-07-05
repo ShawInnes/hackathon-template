@@ -6,26 +6,10 @@ async function main() {
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
   const prisma = new PrismaClient({ adapter })
 
-  //   const adminEmail = process.env.INITIAL_ADMIN_EMAIL?.toLowerCase()
-  //   if (!adminEmail) {
-  //     console.warn("INITIAL_ADMIN_EMAIL not set — skipping admin seed")
-  //     return
-  //   }
+  // Add reference/lookup data or initial users here using idempotent upserts, e.g.:
+  //   await prisma.user.upsert({ where: { email }, update: {}, create: { ... } })
 
-  //   await prisma.employee.upsert({
-  //     where: { email: adminEmail },
-  //     update: { roleType: "ADMIN" },
-  //     create: {
-  //       employeeId: "ADMIN-0001",
-  //       fullName: "Initial Admin",
-  //       positionTitle: "Administrator",
-  //       email: adminEmail,
-  //       roleType: "ADMIN",
-  //       fte: 1.0,
-  //     },
-  //   })
-
-  console.log(`Seeded data`)
+  console.log("Seed complete")
   await prisma.$disconnect()
 }
 
