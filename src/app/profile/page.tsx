@@ -11,7 +11,7 @@ export default async function ProfilePage() {
   const session = await auth()
 
   if (!session?.user) {
-    redirect("/")
+    redirect("/signin")
   }
 
   const user = session.user

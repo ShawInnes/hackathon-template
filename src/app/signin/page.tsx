@@ -4,6 +4,8 @@ import { PageLayout } from "@/components/page-layout"
 import { SignInCard } from "@/components/sign-in-card"
 import { Center } from "@astryxdesign/core/Center"
 
+const authEnabled = process.env.AUTH_ENABLED === "true"
+
 export default async function SignInPage() {
   const session = await auth()
 
@@ -14,7 +16,7 @@ export default async function SignInPage() {
   return (
     <PageLayout user={null}>
       <Center height="calc(100vh - 7rem)">
-        <SignInCard />
+        <SignInCard authEnabled={authEnabled} />
       </Center>
     </PageLayout>
   )

@@ -7,12 +7,17 @@ vi.mock("@/lib/auth", () => ({
 
 describe("SignInCard", () => {
   it("renders the sign-in heading", () => {
-    render(<SignInCard />)
+    render(<SignInCard authEnabled={true} />)
     expect(screen.getByRole("heading")).toBeInTheDocument()
   })
 
-  it("renders the sign-in button", () => {
-    render(<SignInCard />)
+  it("renders the SSO label when auth is enabled", () => {
+    render(<SignInCard authEnabled={true} />)
     expect(screen.getByRole("button", { name: /sign in with sso/i })).toBeInTheDocument()
+  })
+
+  it("renders the dev-mode label when auth is disabled", () => {
+    render(<SignInCard authEnabled={false} />)
+    expect(screen.getByRole("button", { name: /continue as dev user/i })).toBeInTheDocument()
   })
 })

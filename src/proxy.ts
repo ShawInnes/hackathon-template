@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server"
 // Add paths that require authentication here.
 // Cookie presence check below is optimistic — no signature verification.
 // Every protected page MUST also call auth() server-side.
-// Note: "/" is protected at the page level (auth() + redirect) since startsWith("/") would match all paths.
+// Note: "/" is a public landing page — do not add it here.
 const PROTECTED_PATHS = ["/profile"]
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
@@ -17,7 +17,7 @@ export function proxy(request: NextRequest) {
   if (!AUTH_ENABLED) {
     // Dev mode: check for dev-session cookie set by mock signIn.
     if (!request.cookies.get("dev-session")) {
-      return NextResponse.redirect(new URL("/", request.url))
+      return NextResponse.redirect(new URL("/signin", request.url))
     }
     return
   }

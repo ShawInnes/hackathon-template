@@ -5,7 +5,11 @@ import { Text } from "@astryxdesign/core/Text"
 import { Button } from "@astryxdesign/core/Button"
 import { VStack } from "@astryxdesign/core/VStack"
 
-export function SignInCard() {
+interface SignInCardProps {
+  authEnabled: boolean
+}
+
+export function SignInCard({ authEnabled }: SignInCardProps) {
   return (
     <Card width={384}>
       <VStack gap={4} align="center">
@@ -13,7 +17,9 @@ export function SignInCard() {
           <Heading level={1} justify="center">
             Welcome
           </Heading>
-          <Text color="secondary">Sign in to access the app</Text>
+          <Text color="secondary">
+            {authEnabled ? "Sign in to access the app" : "Dev mode — no real credentials required"}
+          </Text>
         </VStack>
         <form
           action={async () => {
@@ -22,7 +28,11 @@ export function SignInCard() {
           }}
           className="w-full"
         >
-          <Button type="submit" label="Sign in with SSO" width="100%" />
+          <Button
+            type="submit"
+            label={authEnabled ? "Sign in with SSO" : "Continue as Dev User"}
+            width="100%"
+          />
         </form>
       </VStack>
     </Card>

@@ -32,7 +32,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) — you should see the sign-in page.
+   Open [http://localhost:3000](http://localhost:3000) — you should see the landing page.
 
 ## Building your app
 
@@ -47,7 +47,7 @@ import { PageLayout } from "@/components/page-layout"
 
 export default async function MyPage() {
   const session = await auth()
-  if (!session?.user) redirect("/")
+  if (!session?.user) redirect("/signin")
 
   return (
     <PageLayout user={session.user}>
