@@ -23,7 +23,10 @@ const authEnabled = process.env.AUTH_ENABLED === "true"
 
 export function PageLayout({ children, user }: PageLayoutProps) {
   return (
-    <AppShell topNav={<Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />} contentPadding={4}>
+    <AppShell
+      topNav={<Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />}
+      contentPadding={4}
+    >
       {children}
     </AppShell>
   )

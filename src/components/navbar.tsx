@@ -36,7 +36,13 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
               <DropdownMenu
                 button={{
                   label: user.name ?? user.email ?? "Account",
-                  icon: <Avatar name={user.name ?? user.email ?? "?"} src={user.image ?? undefined} size="tiny" />,
+                  icon: (
+                    <Avatar
+                      name={user.name ?? user.email ?? "?"}
+                      src={user.image ?? undefined}
+                      size="tiny"
+                    />
+                  ),
                   variant: "ghost",
                 }}
                 items={[
