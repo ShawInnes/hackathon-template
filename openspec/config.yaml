@@ -1,11 +1,11 @@
 schema: spec-driven
 
 context: |
-  Tech stack: Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui. Turbopack is the default bundler.
+  Tech stack: Next.js 16 (App Router), TypeScript, Astryx design system (@astryxdesign/core) with Tailwind CSS as a token-backed styling escape hatch. Turbopack is the default bundler.
   Auth: Auth.js v5 with OIDC PKCE — no client secret. Session stored in PostgreSQL via Prisma adapter.
   Database: PostgreSQL 16 via Prisma ORM. Schema in prisma/schema.prisma.
   Testing: Vitest + @testing-library/react. Tests co-located with components (*.test.tsx).
-  UI rule: always use shadcn/ui primitives. Install with: npx shadcn add <component>.
+  UI rule: always use Astryx (@astryxdesign/core) primitives. Discover with: npx astryx build "<idea>" / npx astryx component <Name>.
   Component rule: before any feature, consider extracting UI into a reusable component in src/components/.
   Route protection: add paths to PROTECTED_PATHS in src/proxy.ts (Next.js 16 convention).
 
