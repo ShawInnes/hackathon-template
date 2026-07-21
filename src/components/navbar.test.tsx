@@ -9,6 +9,14 @@ vi.mock("@/lib/actions/sign-out", () => ({
   signOutAction: vi.fn(),
 }))
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
+
+vi.mock("@/components/theme-toggle", () => ({
+  ThemeToggle: () => null,
+}))
+
 vi.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
