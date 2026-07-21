@@ -1,4 +1,3 @@
-import NextLink from "next/link"
 import { Center } from "@astryxdesign/core/Center"
 import { VStack } from "@astryxdesign/core/VStack"
 import { Heading } from "@astryxdesign/core/Heading"
@@ -15,7 +14,7 @@ export default function NotFound() {
         <Text color="secondary" justify="center">
           Page not found
         </Text>
-        <Link as={NextLink} href="/" isStandalone>
+        <Link href="/" isStandalone>
           Back home
         </Link>
       </VStack>

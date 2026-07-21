@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { signOutAction } from "@/lib/actions/sign-out"
 import { TopNav, TopNavHeading } from "@astryxdesign/core/TopNav"
@@ -27,7 +26,7 @@ export function Navbar({ user, authEnabled }: NavbarProps) {
 
   return (
     <TopNav
-      heading={<TopNavHeading heading="Hackathon App" headingHref="/" as={Link} />}
+      heading={<TopNavHeading heading="Hackathon App" headingHref="/" />}
       endContent={
         <HStack gap={2} align="center">
           <ThemeToggle />
