@@ -1,3 +1,7 @@
+---
+description: ALWAYS ACTIVE. Commit immediately after any completed feature, fix, or meaningful change — stage specific files, conventional commit format.
+---
+
 # Commit After Feature
 
 After completing any feature, bug fix, or meaningful code change — commit immediately. Do not move to the next task or report completion with uncommitted work.

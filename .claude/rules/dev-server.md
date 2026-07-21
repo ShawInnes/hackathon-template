@@ -1,3 +1,7 @@
+---
+description: ALWAYS ACTIVE. Dev server runs in tmux session `app`; don't run `npm run build` to verify; hot-reload handles code edits.
+---
+
 # Dev Server & Builds
 
 This is a hackathon template. Optimise for fast iteration — avoid slow, unnecessary commands.

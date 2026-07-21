@@ -1,12 +1,8 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with code in this repository. Detailed rules are in `.claude/rules/` and are loaded automatically by glob match.
+Next.js 16 App Router hackathon project. TypeScript, Astryx design system (`@astryxdesign/core`, Tailwind as a token-backed escape hatch), Auth.js v5 (OIDC PKCE — see `authjs-v5` rule), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
 
-## Overview
-
-Next.js 16 hackathon project. Stack: Next.js 16 App Router, TypeScript, Astryx design system (`@astryxdesign/core`) with Tailwind CSS as a token-backed styling escape hatch, Auth.js v5 (OIDC PKCE), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
-
-OIDC provider configured via `AUTH_OIDC_ISSUER` and `AUTH_OIDC_ID`. Profile claims are fetched from the userinfo endpoint in `src/lib/auth.ts`.
+Detailed rules live in `.claude/rules/` and load automatically — each file's frontmatter carries its own `description` and (if scoped) `globs`; a file with no `globs` is always active. This CLAUDE.md is an index, not a mirror of that content.
 
 ## Mandatory Workflow
 
@@ -14,9 +10,10 @@ Follow this sequence for every non-trivial task. Do not skip steps.
 
 1. **Clarify** — Ask questions to resolve ambiguity. Do not assume intent. If the request is clear and specific, state your understanding and confirm before proceeding.
 2. **Plan** — Propose an approach: what changes, which files, what trade-offs. Wait for approval. Use `EnterPlanMode` for multi-file changes.
-3. **Implement** — Execute the approved plan. Do not deviate without re-confirming.
+3. **Implement** — Execute the approved plan. Offload research/exploration to subagents (`Explore`) to keep context clean; re-plan immediately if something goes sideways instead of pushing through.
+4. **Verify** — Run the commands in `## Verification` before calling a task done. Never mark something complete on the strength of the diff alone.
 
-Skip to step 3 only for single-line fixes, typos, or tasks where the user gave explicit, unambiguous instructions.
+Skip to step 3 only for single-line fixes, typos, or tasks where the user gave explicit, unambiguous instructions. For bug reports with a reproducible failure (failing test, error log), fix the root cause directly rather than asking for hand-holding.
 
 ## OpenSpec Workflow
 
@@ -43,55 +40,27 @@ Invoke these skills (via the `Skill` tool) for the patterns below. Each is a sel
 | `secrets-scanning` | Setting up gitleaks, recovering from a leaked secret, adding new env vars |
 | `create-nextjs-component` | Creating any new React component |
 
-## Rules Summary
+## Rules
 
-Rules in `.claude/rules/` are either always-active or glob-scoped (loaded when matching files are touched).
+Always active — read their frontmatter for the exact constraint: `genai-llm-integration`, `ui-url-driven-navigation`, `adding-features`, `check-before-creating`, `no-overengineering`, `no-todos-or-partials`, `no-orphan-features`, `commit-after-feature`, `dev-server`, `zod-schemas`, `code-quality`, `secrets-handling`.
 
-### Always active
+Loaded when touching matching files — `src/components/**` / `src/app/**/*.tsx`: `ui-astryx-first`, `ui-component-reuse`, `ui-scroll-patterns`, `tanstack-table`, `tanstack-form`, `tanstack-query`. Other scopes: `prisma` (`prisma/**`), `authjs-v5` (`src/lib/auth.ts`), `devcontainer` (`.devcontainer/**`, `package.json`).
 
-These rules have no glob — they load in every context:
+## Prisma Workflow
 
-| Rule | Constraint |
-|------|-----------|
-| `genai-llm-integration` | Vercel AI SDK + OpenAI-compatible endpoint only. No other LLM SDKs. |
-| `ui-url-driven-navigation` | All navigable state (tabs, filters, pagination) must be URL-driven for deep linking. |
-| `adding-features` | New routes use `PageLayout` + `auth()`. Protected paths go in `PROTECTED_PATHS`. |
-| `check-before-creating` | Search the codebase before creating any new component, utility, hook, or feature. |
-| `no-overengineering` | No premature abstractions, unnecessary error handling, or dead code. |
-| `no-todos-or-partials` | All code must be fully functional. No TODOs, placeholders, or incomplete features. |
-| `no-orphan-features` | Every feature reachable via UI nav from `/`. Replace template placeholders (dashboard, navbar, README, branding) during initial implementation; keep README current after every feature. |
-| `commit-after-feature` | Commit immediately after completing any feature, fix, or meaningful change. |
-| `dev-server` | Don't run `npm run build` unless necessary. `npm run dev` runs in tmux — check before starting. |
-| `zod-schemas` | All DTOs, server action inputs, env vars, and external API responses must be validated with Zod. Types derived via `z.infer`. |
-| `code-quality` | Prettier + ESLint + lint-staged + simple-git-hooks + ts-reset. Pre-commit hook is mandatory — never `--no-verify`. |
-| `secrets-handling` | No hardcoded secrets. gitleaks runs pre-commit. Env vars only, validated via Zod at module load. |
+After any change to `prisma/schema.prisma` or `prisma/migrations/`: `npm run prisma:migrate` → `npm run prisma:generate` (if migrate was skipped) → `npm run prisma:seed`. Full workflow in `.claude/rules/prisma.md`.
 
-### Glob-scoped
+## Verification
 
-These load when editing matching files:
+Run before calling a task done:
 
-| Rule | Triggers on |
-|------|-------------|
-| `ui-astryx-first` | `src/components/**`, `src/app/**/*.tsx` |
-| `ui-component-reuse` | `src/components/**`, `src/app/**/*.tsx` |
-| `prisma` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
-| `authjs-v5` | `src/lib/auth.ts`, `src/types/next-auth.d.ts` |
-| `devcontainer` | `.devcontainer/**`, `package.json` |
-| `tanstack-table` | `src/components/**`, `src/app/**/*.tsx` — use for tables with sort/filter/pagination |
-| `tanstack-form` | `src/components/**`, `src/app/**/*.tsx` — use for forms with 3+ fields or non-trivial validation |
-| `tanstack-query` | `src/components/**`, `src/app/**/*.tsx`, `src/hooks/**` — only when server components are insufficient |
+- `npm run typecheck` — TypeScript, no emit
+- `npm run lint` — ESLint
+- `npm run format:check` — Prettier
+- `npm run test` — Vitest
+- `npm run lint:prisma` — schema lint (only if `prisma/schema.prisma` changed)
 
-## Available Commands
-
-- `npm run dev` — start dev server
-- `npm run build` — production build
-- `npm run test` — run tests
-- `npm run prisma:migrate` — create and apply a new migration (requires running DB); also regenerates the client
-- `npm run prisma:generate` — regenerate the Prisma client only (no migration)
-- `npm run prisma:seed` — run the seed script to populate required reference data
-- `npm run prisma:studio` — open Prisma Studio (database browser)
-
-After any change to `prisma/schema.prisma` or `prisma/migrations/`, run `prisma:migrate` → `prisma:generate` (if needed) → `prisma:seed`. See `.claude/rules/prisma.md` for the full workflow.
+Pre-commit already runs lint-staged + gitleaks — never bypass with `--no-verify`. Do not run `npm run build` (see `dev-server` rule).
 
 <!-- ASTRYX:START -->
 Astryx v0.1.7 · 150 components
