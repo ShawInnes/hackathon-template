@@ -16,13 +16,13 @@ Use `@tanstack/react-form` with a Zod adapter for any form with more than two fi
 
 ## When to skip
 
-- 1–2 field forms (search box, single text input) → plain `<form action={serverAction}>` with shadcn `<Input>` + `<Button>`.
+- 1–2 field forms (search box, single text input) → plain `<form action={serverAction}>` with Astryx `<TextInput>` + `<Button>`.
 
 ## Required setup
 
 ```bash
 npm install @tanstack/react-form zod
-npx shadcn add input label button form
+npx astryx component TextInput
 ```
 
 ## Pattern
@@ -30,6 +30,7 @@ npx shadcn add input label button form
 ```tsx
 "use client"
 import { useForm } from "@tanstack/react-form"
+import { TextInput } from "@astryxdesign/core/TextInput"
 import { CreateTaskInput } from "@/lib/schemas/tasks"
 
 export function CreateTaskForm({ action }: { action: (i: unknown) => Promise<void> }) {
@@ -43,10 +44,11 @@ export function CreateTaskForm({ action }: { action: (i: unknown) => Promise<voi
     <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}>
       <form.Field name="title">
         {(field) => (
-          <Input
+          <TextInput
+            label="Title"
             value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-            onBlur={field.handleBlur}
+            onChange={(value) => field.handleChange(value)}
+            status={field.state.meta.errors.length ? { type: "error", message: field.state.meta.errors[0] } : undefined}
           />
         )}
       </form.Field>

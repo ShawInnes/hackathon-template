@@ -7,11 +7,17 @@ description: Use this skill when creating new React components, UI elements, or 
 
 ## References
 
-Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask. Use the Context7 Library websites/shadcn_io.
+Before writing any markup, discover the closest Astryx primitive via the CLI — do not guess component names or reach for raw HTML:
+
+```bash
+npx astryx build "<idea>"       # closest page/block/component kit
+npx astryx component <Name>     # props + examples for a specific component
+npx astryx template <name>      # scaffold or study a page/block recipe
+```
 
 ## Core Rules
 
-- **shadcn first** - Always check if a suitable shadcn/ui component exists before building from scratch. Use it as the base and compose/extend on top. Install the base component if it doesn't exist in the project.
+- **Astryx first** - Always check whether `@astryxdesign/core` already provides the component before building from scratch. Never use a raw `<div>` for layout, spacing, buttons, cards, inputs, dialogs, dropdowns, or avatars — Astryx components do all layout/spacing.
 - **DO NOT OVERENGINEER** - Keep code simple, ≤100 lines per component
 - **One component per file** - Create new files for every component
 - **Complete implementations** - No placeholders, TODOs, or incomplete code
@@ -21,10 +27,10 @@ Always use Context7 MCP when I need library/API documentation, code generation, 
 
 **1. Presentational vs Container Components**
 
-- UI components in `src/components/ui/` must be presentational only
+- UI components in `src/components/` must be presentational only
 - Never hardcode data arrays, objects, or business logic inside UI components
 - Data and behavior must be passed via props from parent/container components
-- Container components (in `src/components/layout/` or pages) manage data and logic
+- Container components (pages, or feature-level components) manage data and logic
 
 **2. Props-Based Configuration**
 
@@ -58,17 +64,19 @@ export default async function ProductsPage() {
 
 ```tsx
 // components/products/ProductList.tsx - SERVER COMPONENT
+import { VStack } from "@astryxdesign/core/Stack";
+
 interface ProductListProps {
   products: Product[];
 }
 
 export default function ProductList({ products }: ProductListProps) {
   return (
-    <div className="grid gap-4">
+    <VStack gap={4}>
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
-    </div>
+    </VStack>
   );
 }
 ```
@@ -77,16 +85,20 @@ export default function ProductList({ products }: ProductListProps) {
 
 ```tsx
 // components/products/ProductCard.tsx - SERVER COMPONENT
+import { Card } from "@astryxdesign/core/Card";
+import { Heading } from "@astryxdesign/core/Heading";
+import { Text } from "@astryxdesign/core/Text";
+
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="rounded-lg border p-4">
-      <h3>{product.name}</h3>
-      <p>{product.price}</p>
-    </div>
+    <Card>
+      <Heading level={3}>{product.name}</Heading>
+      <Text>{product.price}</Text>
+    </Card>
   );
 }
 ```
@@ -130,7 +142,7 @@ interface MyComponentProps {
 }
 
 export default function MyComponent({ data }: MyComponentProps) {
-  return <div>{data.title}</div>;
+  return <Text>{data.title}</Text>;
 }
 ```
 
@@ -140,10 +152,11 @@ export default function MyComponent({ data }: MyComponentProps) {
 "use client"; // Only when you need: hooks, events, browser APIs
 
 import { useState } from "react";
+import { Button } from "@astryxdesign/core/Button";
 
 export default function Counter({ initialCount }: { initialCount: number }) {
   const [count, setCount] = useState(initialCount);
-  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+  return <Button onClick={() => setCount(count + 1)}>{count}</Button>;
 }
 ```
 
@@ -152,6 +165,8 @@ export default function Counter({ initialCount }: { initialCount: number }) {
 ```tsx
 "use client";
 
+import { TextInput } from "@astryxdesign/core/TextInput";
+
 interface ProductFormProps {
   product: Product; // Passed from parent
 }
@@ -159,7 +174,7 @@ interface ProductFormProps {
 export default function ProductForm({ product }: ProductFormProps) {
   const [name, setName] = useState(product.name);
   // Client state for form interactions only
-  return <input value={name} onChange={(e) => setName(e.target.value)} />;
+  return <TextInput label="Name" value={name} onChange={(value) => setName(value)} />;
 }
 ```
 
@@ -168,9 +183,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 ```
 src/
 ├── app/              # Pages, layouts, routes
-├── components/
-│   ├── ui/          # shadcn/ui components
-│   └── [feature]/   # Feature components
+├── components/       # Feature components, composed from Astryx primitives
 ├── lib/             # Utilities (cn, utils)
 └── hooks/           # Custom hooks
 ```
@@ -179,43 +192,43 @@ src/
 
 ## Styling
 
-### Tailwind + cn() Utility
+### Astryx props first, Tailwind + cn() as the fallback
 
 ```tsx
+import { Card } from "@astryxdesign/core/Card";
 import { cn } from "@/lib/utils";
 
-export default function Card({ className, variant }: Props) {
+export default function HighlightCard({ className, variant, children }: Props) {
   return (
-    <div
+    <Card
       className={cn(
-        "rounded-lg border p-4",
-        variant === "highlight" && "border-blue-500",
+        variant === "highlight" && "border-accent",
         className,
       )}
     >
       {children}
-    </div>
+    </Card>
   );
 }
 ```
 
 **Best Practices**:
 
-- Tailwind only - no custom CSS unless necessary
-- Semantic colors: `bg-background`, `text-foreground`, `border-border`
+- Use the component's own props before reaching for a class name — check `npx astryx component <Name>` for a prop that already covers the need.
+- Tailwind utility classes are the token-backed escape hatch for the rare gap, not the default — always backed by `@astryxdesign/core/tailwind-theme.css` tokens (`bg-surface`, `text-primary`, `rounded-lg`, ...), never raw hex/px values or inline `style={{}}`.
 - Responsive: `text-sm md:text-base lg:text-lg`
 
-## shadcn/ui
+## Astryx
 
-**Check shadcn first** - Before building any UI component, check whether shadcn/ui already provides a suitable base. Common components to use from shadcn: `Button`, `Input`, `Card`, `Dialog`, `Select`, `Checkbox`, `Badge`, `Table`, `Tabs`, `Tooltip`, `DropdownMenu`, `Sheet`, `Form`, and more. Only build from scratch when no suitable shadcn component exists.
+**Check Astryx first** - Before building any UI element, run `npx astryx search "<query>"` or `npx astryx component --list` to find the closest primitive. Common components: `Button`, `IconButton`, `TextInput`, `Card`, `Dialog`, `Select`, `Checkbox`, `Badge`, `Table`, `Tabs`, `Tooltip`, `DropdownMenu`, `Avatar`, and more (150 total). Only build from scratch when no suitable Astryx component exists.
 
-**Compose, don't modify** - Wrap shadcn components, never edit library files:
+**Compose, don't fork** - Wrap Astryx components, never edit library files (use `npx astryx swizzle <Name>` only for deliberate deep customization):
 
 ```tsx
-import { Button } from "@/components/ui/button";
+import { Button } from "@astryxdesign/core/Button";
 
 export default function SubmitButton(props: Props) {
-  return <Button variant="default" size="lg" {...props} />;
+  return <Button variant="primary" size="lg" {...props} />;
 }
 ```
 
@@ -234,9 +247,11 @@ export default function Component({ title, className }: ComponentProps) {
 }
 ```
 
-**Extending shadcn types**:
+**Extending Astryx types**:
 
 ```tsx
+import type { Button } from "@astryxdesign/core/Button";
+
 interface CustomProps extends React.ComponentProps<typeof Button> {
   showIcon?: boolean;
 }
@@ -256,7 +271,7 @@ import { Heart, Share2 } from "lucide-react";
 ```tsx
 "use client";
 const [value, setValue] = useState("");
-<Input value={value} onChange={(e) => setValue(e.target.value)} />;
+<TextInput label="Search" value={value} onChange={(value) => setValue(value)} />;
 ```
 
 ## Checklist
@@ -264,7 +279,7 @@ const [value, setValue] = useState("");
 - [ ] Correct directory (`src/components/` or `src/app/`)
 - [ ] TypeScript with explicit types
 - [ ] `@/*` path aliases for imports
-- [ ] Tailwind + `cn()` for styling
+- [ ] Astryx component props used before falling back to Tailwind + `cn()`
 - [ ] Server component by default (no `"use client"` unless needed)
 - [ ] Properly exported
 - [ ] No TODOs or placeholders
@@ -272,11 +287,12 @@ const [value, setValue] = useState("");
 
 ## Anti-Patterns
 
-❌ Building a component from scratch when a shadcn/ui base exists
+❌ Building a component from scratch when an Astryx base exists
+❌ Raw `<div>` for layout/spacing/buttons/cards that Astryx covers
 ❌ Multiple components in one file
-❌ Modifying shadcn/ui files directly
+❌ Modifying `@astryxdesign/core` files directly
 ❌ Using `any` type
-❌ Custom CSS with Tailwind
+❌ Reaching for Tailwind before checking component props
 ❌ Unnecessary `"use client"`
 ❌ Components over 100 lines
 ❌ Incomplete implementations

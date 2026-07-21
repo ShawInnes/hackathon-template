@@ -1,6 +1,6 @@
 ---
 name: tanstack-form
-description: Build a typed, validated form using TanStack Form + Zod + shadcn primitives. Use when adding any form with 3+ fields or non-trivial validation.
+description: Build a typed, validated form using TanStack Form + Zod + Astryx primitives. Use when adding any form with 3+ fields or non-trivial validation.
 ---
 
 # TanStack Form Skill
@@ -16,7 +16,7 @@ Goal: forms that share validation between client and server via a single Zod sch
 
 ## When NOT to invoke
 
-- 1–2 fields → plain `<form action={serverAction}>` with shadcn `<Input>` + `<Button>`.
+- 1–2 fields → plain `<form action={serverAction}>` with Astryx `<TextInput>` + `<Button>`.
 
 ## Steps
 
@@ -24,7 +24,7 @@ Goal: forms that share validation between client and server via a single Zod sch
 
    ```bash
    npm install @tanstack/react-form zod
-   npx shadcn add input label button
+   npx astryx component TextInput
    ```
 
 2. **Create / locate the Zod schema** (use the `zod-schemas` skill). Schema lives in `src/lib/schemas/<feature>.ts`. Both this form AND the server action import the same schema.
@@ -34,9 +34,9 @@ Goal: forms that share validation between client and server via a single Zod sch
    ```tsx
    "use client"
    import { useForm } from "@tanstack/react-form"
-   import { Input } from "@/components/ui/input"
-   import { Label } from "@/components/ui/label"
-   import { Button } from "@/components/ui/button"
+   import { TextInput } from "@astryxdesign/core/TextInput"
+   import { Button } from "@astryxdesign/core/Button"
+   import { VStack } from "@astryxdesign/core/Stack"
    import { CreateTaskInput } from "@/lib/schemas/tasks"
 
    interface Props {
@@ -59,30 +59,27 @@ Goal: forms that share validation between client and server via a single Zod sch
            e.preventDefault()
            form.handleSubmit()
          }}
-         className="space-y-4"
        >
-         <form.Field name="title">
-           {(field) => (
-             <div className="space-y-2">
-               <Label htmlFor={field.name}>Title</Label>
-               <Input
-                 id={field.name}
+         <VStack gap={4}>
+           <form.Field name="title">
+             {(field) => (
+               <TextInput
+                 label="Title"
                  value={field.state.value}
-                 onChange={(e) => field.handleChange(e.target.value)}
-                 onBlur={field.handleBlur}
+                 onChange={(value) => field.handleChange(value)}
+                 status={
+                   field.state.meta.errors.length
+                     ? { type: "error", message: field.state.meta.errors.join(", ") }
+                     : undefined
+                 }
                />
-               {field.state.meta.errors.length > 0 && (
-                 <p className="text-sm text-destructive">
-                   {field.state.meta.errors.join(", ")}
-                 </p>
-               )}
-             </div>
-           )}
-         </form.Field>
+             )}
+           </form.Field>
 
-         <Button type="submit" disabled={form.state.isSubmitting}>
-           {form.state.isSubmitting ? "Saving…" : "Save"}
-         </Button>
+           <Button type="submit" isLoading={form.state.isSubmitting}>
+             Save
+           </Button>
+         </VStack>
        </form>
      )
    }

@@ -5,7 +5,7 @@ globs: ["src/components/**", "src/app/**/*.tsx"]
 
 # TanStack Table
 
-Use `@tanstack/react-table` (headless) layered on the shadcn/ui `Table` primitive whenever a table needs sort, filter, pagination, row selection, or column visibility. It is headless — it manages state, not markup, so styling stays in shadcn + Tailwind.
+Use `@tanstack/react-table` (headless) layered on Astryx's `Table` component whenever a table needs sort, filter, pagination, row selection, or column visibility. It is headless — it manages state, not markup, so styling stays in Astryx (run `npx astryx component Table` for props).
 
 ## When to use
 
@@ -15,14 +15,14 @@ Use `@tanstack/react-table` (headless) layered on the shadcn/ui `Table` primitiv
 
 ## When to skip
 
-- Under 10 static rows with no interaction → plain shadcn `<Table>` is fine.
+- Under 10 static rows with no interaction → plain Astryx `<Table>` is fine.
 - One-off summary tables with hardcoded headers.
 
 ## Required setup
 
 ```bash
 npm install @tanstack/react-table
-npx shadcn add table
+npx astryx component Table
 ```
 
 A reusable `<DataTable />` wrapper lives in `src/components/data-table.tsx`. Always extend that wrapper rather than re-implementing `useReactTable` per page.

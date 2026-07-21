@@ -4,10 +4,10 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
 
 ## What's included
 
-- **Next.js 16** — App Router, TypeScript, Tailwind CSS, Turbopack
+- **Next.js 16** — App Router, TypeScript, Turbopack
 - **Auth.js v5** — OIDC SSO via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations
-- **shadcn/ui** — Button, Card, Avatar, DropdownMenu, Separator pre-installed
+- **Astryx design system** — `@astryxdesign/core` components (Button, Card, Avatar, DropdownMenu, AppShell, ...), with Tailwind CSS as a token-backed styling escape hatch
 - **Dev container** — everything runs in Docker, no local setup required
 - **Claude Code skills** — OpenSpec workflow, component scaffolding, debugging
 
@@ -71,8 +71,9 @@ npm run prisma:studio    # opens a database browser at localhost:5555
 ### Add a UI component
 
 ```bash
-# Install a shadcn primitive first
-npx shadcn add <component-name>
+# Discover the closest Astryx primitive first
+npx astryx build "<idea>"
+npx astryx component <component-name>
 
 # Or use the Claude Code skill to scaffold a custom component
 # In Claude Code: /create-nextjs-component

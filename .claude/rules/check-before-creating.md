@@ -10,6 +10,6 @@ Before implementing any new component, utility, hook, route, or feature:
 2. **Check `src/components/`** for UI components that could be reused or extended.
 3. **Check `src/lib/`** for utilities and helpers that already solve the problem.
 4. **Check `src/hooks/`** for existing custom hooks.
-5. **Check shadcn/ui** for primitives that cover the requirement before building from scratch.
+5. **Check Astryx** (`npx astryx search "<query>"` / `npx astryx component --list`) for primitives that cover the requirement before building from scratch.
 
 If a suitable implementation exists, reuse or extend it. Do not create a duplicate.

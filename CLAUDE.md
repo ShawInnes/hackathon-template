@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Overview
 
-Next.js 16 hackathon project. Stack: Next.js 16 App Router, TypeScript, Tailwind CSS, shadcn/ui, Auth.js v5 (OIDC PKCE), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
+Next.js 16 hackathon project. Stack: Next.js 16 App Router, TypeScript, Astryx design system (`@astryxdesign/core`) with Tailwind CSS as a token-backed styling escape hatch, Auth.js v5 (OIDC PKCE), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
 
 OIDC provider configured via `AUTH_OIDC_ISSUER` and `AUTH_OIDC_ID`. Profile claims are fetched from the userinfo endpoint in `src/lib/auth.ts`.
 
@@ -72,7 +72,7 @@ These load when editing matching files:
 
 | Rule | Triggers on |
 |------|-------------|
-| `ui-shadcn-first` | `src/components/**`, `src/app/**/*.tsx` |
+| `ui-astryx-first` | `src/components/**`, `src/app/**/*.tsx` |
 | `ui-component-reuse` | `src/components/**`, `src/app/**/*.tsx` |
 | `prisma` | `prisma/**`, `src/generated/prisma/**`, `src/lib/prisma.ts` |
 | `authjs-v5` | `src/lib/auth.ts`, `src/types/next-auth.d.ts` |

@@ -1,11 +1,11 @@
 ---
 name: tanstack-table
-description: Build a data table with sort, filter, pagination, or row selection using TanStack Table layered on shadcn/ui. Use when adding any non-trivial table UI.
+description: Build a data table with sort, filter, pagination, or row selection using TanStack Table layered on Astryx's Table component. Use when adding any non-trivial table UI.
 ---
 
 # TanStack Table Skill
 
-Goal: scaffold a robust data table without the user needing to learn TanStack Table internals. Headless logic from `@tanstack/react-table`, markup from shadcn `<Table>`, state synced to the URL.
+Goal: scaffold a robust data table without the user needing to learn TanStack Table internals. Headless logic from `@tanstack/react-table`, markup from Astryx `<Table>`, state synced to the URL.
 
 ## When to invoke
 
@@ -14,7 +14,7 @@ Goal: scaffold a robust data table without the user needing to learn TanStack Ta
 
 ## When NOT to invoke
 
-- Static <10 row tables → use plain shadcn `<Table>`.
+- Static <10 row tables → use plain Astryx `<Table>` with its data-driven `columns` prop directly (no TanStack Table needed).
 - Read-only summary with no interaction.
 
 ## Steps
@@ -25,7 +25,7 @@ Goal: scaffold a robust data table without the user needing to learn TanStack Ta
 
    ```bash
    npm install @tanstack/react-table
-   npx shadcn add table
+   npx astryx component Table
    ```
 
 3. **Create the shared `<DataTable />` wrapper** (only once, first time):
@@ -41,14 +41,14 @@ Goal: scaffold a robust data table without the user needing to learn TanStack Ta
      getSortedRowModel,
      useReactTable,
    } from "@tanstack/react-table"
-   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+   import { Table, proportional, type TableColumn } from "@astryxdesign/core/Table"
 
-   interface DataTableProps<T> {
+   interface DataTableProps<T extends Record<string, unknown>> {
      columns: ColumnDef<T>[]
      data: T[]
    }
 
-   export function DataTable<T>({ columns, data }: DataTableProps<T>) {
+   export function DataTable<T extends Record<string, unknown>>({ columns, data }: DataTableProps<T>) {
      const table = useReactTable({
        data,
        columns,
@@ -57,32 +57,24 @@ Goal: scaffold a robust data table without the user needing to learn TanStack Ta
        getPaginationRowModel: getPaginationRowModel(),
      })
 
-     return (
-       <Table>
-         <TableHeader>
-           {table.getHeaderGroups().map((hg) => (
-             <TableRow key={hg.id}>
-               {hg.headers.map((h) => (
-                 <TableHead key={h.id}>
-                   {flexRender(h.column.columnDef.header, h.getContext())}
-                 </TableHead>
-               ))}
-             </TableRow>
-           ))}
-         </TableHeader>
-         <TableBody>
-           {table.getRowModel().rows.map((row) => (
-             <TableRow key={row.id}>
-               {row.getVisibleCells().map((cell) => (
-                 <TableCell key={cell.id}>
-                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                 </TableCell>
-               ))}
-             </TableRow>
-           ))}
-         </TableBody>
-       </Table>
-     )
+     const rows = table.getRowModel().rows
+
+     // Astryx's renderCell receives only the row item, so cells are matched back
+     // to a TanStack row by reference and rendered through flexRender.
+     const astryxColumns: TableColumn<T>[] = table.getFlatHeaders().map((header) => ({
+       key: header.id,
+       header: String(header.column.columnDef.header),
+       width: proportional(1),
+       renderCell: (item: T) => {
+         const cell = rows
+           .find((r) => r.original === item)
+           ?.getVisibleCells()
+           .find((c) => c.column.id === header.column.id)
+         return cell ? flexRender(cell.column.columnDef.cell, cell.getContext()) : null
+       },
+     }))
+
+     return <Table data={rows.map((r) => r.original)} columns={astryxColumns} />
    }
    ```
 
