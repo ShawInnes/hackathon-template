@@ -1,3 +1,4 @@
+import { AppShell } from "@astryxdesign/core/AppShell"
 import { Navbar, NavbarUser } from "@/components/navbar"
 
 interface PageLayoutProps {
@@ -22,9 +23,8 @@ const authEnabled = process.env.AUTH_ENABLED === "true"
 
 export function PageLayout({ children, user }: PageLayoutProps) {
   return (
-    <div className="bg-background min-h-screen">
-      <Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />
-      <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
-    </div>
+    <AppShell topNav={<Navbar user={toNavbarUser(user)} authEnabled={authEnabled} />} contentPadding={4}>
+      {children}
+    </AppShell>
   )
 }
