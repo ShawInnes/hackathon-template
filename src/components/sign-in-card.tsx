@@ -18,7 +18,7 @@ export function SignInCard({ authEnabled }: SignInCardProps) {
             Welcome
           </Heading>
           <Text color="secondary">
-            {authEnabled ? "Sign in to access the app" : "Dev mode — no real credentials required"}
+            {authEnabled ? "Sign in to access the app" : "DEV mode — This is NOT real security!"}
           </Text>
         </VStack>
         <form

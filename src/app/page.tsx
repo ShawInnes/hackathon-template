@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth"
 import { PageLayout } from "@/components/page-layout"
-import { HeroCta } from "@/components/hero-cta"
 import { Center } from "@astryxdesign/core/Center"
 import { Heading } from "@astryxdesign/core/Heading"
 import { Section } from "@astryxdesign/core/Section"
@@ -18,21 +17,32 @@ export default async function HomePage() {
           variant="transparent"
           padding={0}
           height={440}
-          className="bg-gradient-to-br from-accent-bg via-blue-vivid to-purple-vivid"
-        />
-        <Center>
-          <VStack gap={6} align="center" className="py-16">
-            <VStack gap={3} align="center">
-              <Heading level={1} type="display-2" justify="center" textWrap="balance">
+          className="from-accent-bg via-blue-vivid to-purple-vivid bg-gradient-to-br"
+        >
+          <Center height="100%">
+            <VStack gap={3} align="center" className="px-6">
+              <Heading
+                level={1}
+                type="display-1"
+                justify="center"
+                textWrap="balance"
+                color="inherit"
+                className="text-on-accent"
+              >
                 Hackathon App
               </Heading>
-              <Text type="body" color="secondary" justify="center" textWrap="balance">
+              <Text
+                type="large"
+                color="inherit"
+                justify="center"
+                textWrap="balance"
+                className="text-on-accent"
+              >
                 Built with the Hackathon Template — Next.js, OIDC SSO, and Astryx.
               </Text>
             </VStack>
-            {user ? <HeroCta /> : null}
-          </VStack>
-        </Center>
+          </Center>
+        </Section>
       </VStack>
     </PageLayout>
   )
