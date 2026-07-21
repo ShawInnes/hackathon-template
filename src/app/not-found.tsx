@@ -1,14 +1,24 @@
-import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
+import NextLink from "next/link"
+import { Center } from "@astryxdesign/core/Center"
+import { VStack } from "@astryxdesign/core/VStack"
+import { Heading } from "@astryxdesign/core/Heading"
+import { Text } from "@astryxdesign/core/Text"
+import { Link } from "@astryxdesign/core/Link"
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-8 text-center">
-      <h1 className="text-6xl font-bold tracking-tight">404</h1>
-      <p className="text-muted-foreground text-lg">Page not found</p>
-      <Link href="/" className={buttonVariants()}>
-        Back home
-      </Link>
-    </div>
+    <Center height="60vh">
+      <VStack gap={4} align="center">
+        <Heading level={1} type="display-2" justify="center">
+          404
+        </Heading>
+        <Text color="secondary" justify="center">
+          Page not found
+        </Text>
+        <Link as={NextLink} href="/" isStandalone>
+          Back home
+        </Link>
+      </VStack>
+    </Center>
   )
 }

@@ -1,7 +1,11 @@
 "use client"
 
 import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { Center } from "@astryxdesign/core/Center"
+import { VStack } from "@astryxdesign/core/VStack"
+import { Heading } from "@astryxdesign/core/Heading"
+import { Text } from "@astryxdesign/core/Text"
+import { Button } from "@astryxdesign/core/Button"
 
 export default function Error({
   error,
@@ -15,15 +19,21 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-8 text-center">
-      <h2 className="text-2xl font-semibold">Something went wrong</h2>
-      <p className="text-muted-foreground text-sm">
-        {error.message || "An unexpected error occurred."}
-      </p>
-      {error.digest && (
-        <p className="text-muted-foreground font-mono text-xs">ref: {error.digest}</p>
-      )}
-      <Button onClick={reset}>Try again</Button>
-    </div>
+    <Center height="60vh">
+      <VStack gap={4} align="center">
+        <Heading level={2} justify="center">
+          Something went wrong
+        </Heading>
+        <Text color="secondary" size="sm" justify="center">
+          {error.message || "An unexpected error occurred."}
+        </Text>
+        {error.digest && (
+          <Text color="secondary" type="code" size="2xs" justify="center">
+            ref: {error.digest}
+          </Text>
+        )}
+        <Button label="Try again" onClick={reset} />
+      </VStack>
+    </Center>
   )
 }

@@ -1,8 +1,13 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { PageLayout } from "@/components/page-layout"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card } from "@astryxdesign/core/Card"
+import { Skeleton } from "@astryxdesign/core/Skeleton"
+import { Heading } from "@astryxdesign/core/Heading"
+import { Text } from "@astryxdesign/core/Text"
+import { VStack } from "@astryxdesign/core/VStack"
+import { HStack } from "@astryxdesign/core/HStack"
+import { Grid } from "@astryxdesign/core/Grid"
 
 export default async function HomePage() {
   const session = await auth()
@@ -15,54 +20,48 @@ export default async function HomePage() {
 
   return (
     <PageLayout user={user}>
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {user.name ?? user.email}</p>
-        </div>
+      <VStack gap={6}>
+        <VStack gap={2}>
+          <Heading level={1}>Dashboard</Heading>
+          <Text color="secondary">Welcome back, {user.name ?? user.email}</Text>
+        </VStack>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Grid columns={{ minWidth: 220, max: 4 }} gap={4}>
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-4 w-24" />
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Skeleton className="h-8 w-16" />
-                <Skeleton className="h-3 w-32" />
-              </CardContent>
+              <VStack gap={2}>
+                <Skeleton index={i} width={96} height={16} />
+                <Skeleton index={i} width={64} height={32} />
+                <Skeleton index={i} width={128} height={12} />
+              </VStack>
             </Card>
           ))}
-        </div>
+        </Grid>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <Grid columns={{ minWidth: 320, max: 2 }} gap={4}>
           <Card>
-            <CardHeader>
-              <Skeleton className="h-5 w-32" />
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <VStack gap={4}>
+              <Skeleton width={128} height={20} />
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-full" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-3 w-1/2" />
-                  </div>
-                </div>
+                <HStack key={i} gap={3} align="center">
+                  <Skeleton index={i} width={40} height={40} radius="rounded" />
+                  <VStack gap={2} width="100%">
+                    <Skeleton index={i} width="75%" height={16} />
+                    <Skeleton index={i} width="50%" height={12} />
+                  </VStack>
+                </HStack>
               ))}
-            </CardContent>
+            </VStack>
           </Card>
 
           <Card>
-            <CardHeader>
-              <Skeleton className="h-5 w-40" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-48 w-full" />
-            </CardContent>
+            <VStack gap={4}>
+              <Skeleton width={160} height={20} />
+              <Skeleton height={192} />
+            </VStack>
           </Card>
-        </div>
-      </div>
+        </Grid>
+      </VStack>
     </PageLayout>
   )
 }
