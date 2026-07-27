@@ -1,0 +1,13 @@
+# Production overrides. Deployed on semver tag push (vX.Y.Z), image.tag is
+# overridden at deploy time via --set image.tag=<version> (see deploy.sh).
+
+ingress:
+  host: hackathon-template.techlab.example.com
+
+replicaCount: 2
+
+postgres:
+  instances: 1
+  memory: 512Mi
+  storageSize: 10Gi
+  walStorageSize: 10Gi

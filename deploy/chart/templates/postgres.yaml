@@ -1,0 +1,31 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "app.name" . }}-pg
+  namespace: {{ include "app.namespace" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "app.name" . }}-pg
+    app.kubernetes.io/component: pg-cluster
+    app: {{ include "app.name" . }}
+spec:
+  instances: {{ .Values.postgres.instances }}
+  bootstrap:
+    initdb:
+      database: {{ include "app.name" . }}
+      owner: {{ include "app.name" . }}
+  postgresql:
+    parameters:
+      shared_buffers: {{ .Values.postgres.sharedBuffers }}
+  resources:
+    requests:
+      memory: {{ .Values.postgres.memory }}
+    limits:
+      memory: {{ .Values.postgres.memory }}
+  storage:
+    size: {{ .Values.postgres.storageSize }}
+    storageClass: {{ .Values.postgres.storageClass }}
+  walStorage:
+    size: {{ .Values.postgres.walStorageSize }}
+    storageClass: {{ .Values.postgres.storageClass }}
+{{- end }}

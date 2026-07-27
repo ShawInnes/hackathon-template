@@ -1,0 +1,16 @@
+# Staging overrides. Deployed on every push to main, image.tag pinned to
+# "staging" (the moving tag produced by deploy/scripts/build-and-push.sh).
+
+image:
+  tag: staging
+
+ingress:
+  host: hackathon-template-staging.techlab.example.com
+
+replicaCount: 1
+
+postgres:
+  instances: 1
+  memory: 256Mi
+  storageSize: 5Gi
+  walStorageSize: 5Gi

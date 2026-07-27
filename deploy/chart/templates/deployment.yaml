@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.name" . }}
+  namespace: {{ include "app.namespace" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    app.kubernetes.io/component: deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "app.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "app.name" . }}
+    spec:
+      serviceAccountName: {{ include "app.name" . }}-sa
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: {{ include "app.name" . }}-config
+            - secretRef:
+                name: {{ .Values.secret.existingSecret | default (printf "%s-secret" (include "app.name" .)) }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.postgres.enabled }}
+                  name: {{ include "app.name" . }}-pg-app
+                  key: uri
+                  {{- else }}
+                  name: {{ .Values.externalDatabase.existingSecret }}
+                  key: {{ .Values.externalDatabase.secretKey }}
+                  {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

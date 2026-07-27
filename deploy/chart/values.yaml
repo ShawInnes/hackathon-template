@@ -1,0 +1,55 @@
+# Default values for the hackathon-template chart.
+# Override per-environment with values-staging.yaml / values-production.yaml,
+# and at deploy time with --set / --set-string for anything secret or CI-supplied.
+
+# Set at deploy time via --set appName=<name> (deploy/scripts/deploy.sh derives
+# it from the git remote). Falls back to the Helm release name if unset.
+appName: ""
+
+replicaCount: 1
+
+image:
+  repository: "" # set at deploy time: <account>.dkr.ecr.<region>.amazonaws.com/<namespace>/<app>
+  tag: latest
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+ingress:
+  className: nginx
+  host: "" # set per-environment, e.g. hackathon-template-staging.example.com
+  extraHosts: [] # additional hostnames pointing at the same service, e.g. a legacy vanity domain
+
+auth:
+  enabled: "false"
+  oidcId: ""
+  oidcIssuer: ""
+
+secret:
+  # AUTH_SECRET — never commit a real value. Pass at deploy time:
+  #   --set-string secret.authSecret="$AUTH_SECRET"
+  authSecret: ""
+  # Set to reuse an existing Secret instead of creating one from `secret.authSecret`.
+  existingSecret: ""
+
+# Bundled CloudNativePG Postgres cluster. Disable and set `externalDatabase`
+# to point at an external Postgres instance instead.
+postgres:
+  enabled: true
+  instances: 1
+  sharedBuffers: 64MB
+  memory: 512Mi
+  storageSize: 10Gi
+  walStorageSize: 10Gi
+  storageClass: gp3
+
+# Used only when postgres.enabled is false — a pre-existing Secret containing
+# the DATABASE_URL connection string.
+externalDatabase:
+  existingSecret: ""
+  secretKey: uri

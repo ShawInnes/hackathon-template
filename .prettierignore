@@ -6,3 +6,8 @@ src/generated
 prisma/migrations
 package-lock.json
 *.md
+
+# Helm templates mix Go template syntax into YAML — Prettier's YAML parser
+# can't handle {{ }} expressions and errors out. Values files are plain YAML
+# and still get formatted normally.
+deploy/chart/templates

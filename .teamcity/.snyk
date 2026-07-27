@@ -1,0 +1,15 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JAVA-ORGJETBRAINSKOTLIN-2393744:
+    - '*':
+        reason: >-
+          Dependency is used to build TeamCity project configuration via Kotlin. The version is comes from the DSL
+          version which requires a new TeamCity server version to update.
+
+          Risk: Kotlin configuration script in this repository may be able to be updated to show metadata about files on
+                the Teamcity server in the TeamCity project configuration.
+        expires: 2026-11-21T00:00:00.000Z
+        created: 2025-11-21T00:34:43.318Z
+patch: {}
