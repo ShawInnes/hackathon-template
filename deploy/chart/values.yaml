@@ -37,6 +37,22 @@ secret:
   # Set to reuse an existing Secret instead of creating one from `secret.authSecret`.
   existingSecret: ""
 
+# When enabled, an ExternalSecret (external-secrets.io) syncs secrets from AWS
+# SSM Parameter Store into the "<appName>-secret" Secret instead of setting
+# secret.authSecret directly. Seed the SSM parameter first, e.g.:
+#   aws ssm put-parameter --name "/techlab/workloads/<appName>/auth-secret" \
+#     --value "$(openssl rand -base64 32)" --type SecureString --region ap-southeast-2
+externalSecret:
+  enabled: false
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-ssm-store
+    kind: ClusterSecretStore
+  ssmPathPrefix: /techlab/workloads
+  keys:
+    - secretKey: AUTH_SECRET
+      remoteRef: auth-secret
+
 # Bundled CloudNativePG Postgres cluster. Disable and set `externalDatabase`
 # to point at an external Postgres instance instead.
 postgres:
@@ -47,6 +63,18 @@ postgres:
   storageSize: 10Gi
   walStorageSize: 10Gi
   storageClass: gp3
+
+  # Off-cluster physical backups to S3 via the barman-cloud CNPG plugin (IRSA).
+  # Requires the barman-cloud plugin + ObjectStore CRD installed in the cluster.
+  backup:
+    enabled: false
+    # Nightly at 03:00. CNPG cron is 6-field (leading seconds field).
+    schedule: "0 0 3 * * *"
+    retentionPolicy: "30d"
+    # No default — supplied by TeamCity by convention. Deploy fails if unset
+    # while backup.enabled is true.
+    destinationBucket: ""
+    iamRoleArn: ""
 
 # Used only when postgres.enabled is false — a pre-existing Secret containing
 # the DATABASE_URL connection string.

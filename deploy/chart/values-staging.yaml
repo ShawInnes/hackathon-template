@@ -5,7 +5,7 @@ image:
   tag: staging
 
 ingress:
-  host: hackathon-template-staging.techlab.example.com
+  host: hackathon-template-staging.example.com
 
 replicaCount: 1
 

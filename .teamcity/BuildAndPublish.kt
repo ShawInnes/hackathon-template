@@ -1,17 +1,20 @@
 import Common.commonFeatures
+import Common.createKubeConfig
+import Common.installKubectlAndEnvsubst
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.DslContext
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 
 /**
- * Builds a multi-arch (amd64+arm64) Docker image and pushes it to ECR tagged
- * with the commit sha, `latest`, and `staging`. Runs on every push to main.
+ * Ensures the app's namespace and Crossplane-managed ECR repository exist,
+ * then builds an amd64 Docker image and pushes it to ECR tagged with the
+ * commit sha, `latest`, and `staging`. Runs on every push to main.
  */
 object BuildAndPublish : BuildType({
     id("BuildAndPublish")
     name = "Build & Publish"
-    description = "Builds a multi-arch image and pushes :<sha>, :latest, :staging to ECR"
+    description = "Builds an amd64 image and pushes :<sha>, :latest, :staging to ECR"
     allowExternalStatus = true
 
     params {
@@ -23,18 +26,36 @@ object BuildAndPublish : BuildType({
     vcs {
         root(DslContext.settingsRoot)
         cleanCheckout = true
-        branchFilter = "+:refs/heads/main"
+        branchFilter = "+:<default>"
     }
 
     triggers {
         vcs {
-            branchFilter = "+:refs/heads/main"
+            branchFilter = "+:<default>"
         }
     }
 
     steps {
+        installKubectlAndEnvsubst()
+        createKubeConfig()
         script {
-            name = "Build & push multi-arch image"
+            name = "Ensure namespace exists"
+            scriptContent = """
+                #!/usr/bin/env bash
+                set -euo pipefail
+                deploy/scripts/ensure-namespace.sh
+            """.trimIndent()
+        }
+        script {
+            name = "Ensure ECR repository exists"
+            scriptContent = """
+                #!/usr/bin/env bash
+                set -euo pipefail
+                deploy/scripts/ensure-ecr.sh
+            """.trimIndent()
+        }
+        script {
+            name = "Build & push amd64 image"
             scriptContent = """
                 #!/usr/bin/env bash
                 set -euo pipefail
@@ -47,11 +68,14 @@ object BuildAndPublish : BuildType({
         executionTimeoutMin = 60
     }
 
-    // Requires an agent with docker buildx + QEMU already configured for
-    // multi-arch builds (`docker buildx create --use` with the qemu emulators).
+    // Pinned to an amd64 agent so the build runs natively — no QEMU
+    // emulation. Building the amd64 target under QEMU on an arm64 agent
+    // previously segfaulted during `next build` (native SWC/esbuild binaries
+    // aren't reliable under emulation).
     requirements {
         moreThan("teamcity.agent.hardware.memorySizeMb", "1000")
         equals("teamcity.agent.jvm.os.name", "Linux")
+        equals("teamcity.agent.jvm.os.arch", "amd64")
     }
 
     features {

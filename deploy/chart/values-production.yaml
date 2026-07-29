@@ -2,7 +2,7 @@
 # overridden at deploy time via --set image.tag=<version> (see deploy.sh).
 
 ingress:
-  host: hackathon-template.techlab.example.com
+  host: hackathon-template.example.com
 
 replicaCount: 2
 

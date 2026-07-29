@@ -1,4 +1,6 @@
 import Common.commonFeatures
+import Common.createKubeConfig
+import Common.installKubectlEnvsubstAndHelm
 import Common.mandatorySnapshot
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.DslContext
@@ -6,8 +8,14 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.finishBuildTrigger
 
 /**
- * Deploys the freshly-built :staging image to the isolated staging namespace.
+ * Deploys the freshly-built image to the isolated staging namespace.
  * Triggered automatically once BuildAndPublish succeeds on main.
+ *
+ * The image is pinned to the commit sha published by BuildAndPublish (via its
+ * `outputs.imageTag` parameter), NOT the mutable `:staging` tag. Deploying by
+ * a floating tag renders the rendered manifest byte-identical between runs, so
+ * `helm upgrade` produces no pod-template change and Kubernetes performs no
+ * rollout — the automatic deploy would silently leave the old image running.
  */
 object DeployStaging : BuildType({
     id("DeployStaging")
@@ -26,7 +34,7 @@ object DeployStaging : BuildType({
     vcs {
         root(DslContext.settingsRoot)
         cleanCheckout = true
-        branchFilter = "+:refs/heads/main"
+        branchFilter = "+:<default>"
     }
 
     dependencies {
@@ -35,19 +43,29 @@ object DeployStaging : BuildType({
 
     triggers {
         finishBuildTrigger {
-            buildType = "BuildAndPublish"
+            buildType = absoluteId("BuildAndPublish")
             successfulOnly = true
-            branchFilter = "+:refs/heads/main"
+            branchFilter = "+:<default>"
         }
     }
 
     steps {
+        installKubectlEnvsubstAndHelm()
+        createKubeConfig()
+        script {
+            name = "Ensure namespace exists"
+            scriptContent = """
+                #!/usr/bin/env bash
+                set -euo pipefail
+                deploy/scripts/ensure-namespace.sh
+            """.trimIndent()
+        }        
         script {
             name = "Helm upgrade --install (staging)"
             scriptContent = """
                 #!/usr/bin/env bash
                 set -euo pipefail
-                deploy/scripts/deploy.sh staging staging "${variables.eksClusterName}" "${variables.ecrRegion}" "${variables.ecrRegistryBase}"
+                deploy/scripts/deploy.sh staging "${asDependency("outputs.imageTag", "BuildAndPublish")}" "${variables.ecrRegistryBase}"
             """.trimIndent()
         }
     }
@@ -56,7 +74,6 @@ object DeployStaging : BuildType({
         executionTimeoutMin = 30
     }
 
-    // Requires an agent with helm, kubectl, and the aws CLI available.
     requirements {
         moreThan("teamcity.agent.hardware.memorySizeMb", "500")
         equals("teamcity.agent.jvm.os.name", "Linux")

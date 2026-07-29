@@ -1,6 +1,7 @@
-# Crossplane-managed ECR repository. Applied once per app, outside the Helm
-# chart — the image repository is infrastructure, not an app deployment
-# concern, and must exist before the first `docker push`.
+# Crossplane-managed ECR repository, outside the Helm chart — the image
+# repository is infrastructure, not an app deployment concern. Applied
+# automatically by deploy/scripts/ensure-ecr.sh at the start of every
+# BuildAndPublish run (kubectl apply is a no-op once it already exists).
 #
 # Usage: envsubst < deploy/ecr.yaml | kubectl apply -f -
 #   APP_NAME - app/repository name, e.g. hackathon-template

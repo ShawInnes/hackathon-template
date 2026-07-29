@@ -1,5 +1,4 @@
 import jetbrains.buildServer.configs.kotlin.*
-import jetbrains.buildServer.configs.kotlin.projectFeatures.dockerECRRegistry
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -14,24 +13,17 @@ To debug settings scripts in command-line, run the
 command and attach your debugger to the port 8000.
 */
 
-version = "2025.03"
+version = "2025.11"
 
 project {
     // These params get shared down to the build types below. Override any of
     // them per-instance in the TeamCity UI without touching this file.
+    //
+    // Branch specification is NOT configured here — it lives on the VCS root
+    // itself and must include `+:refs/tags/(v*)` for DeployProduction's tag
+    // trigger to match. Each build type sets its own branchFilter, which
+    // matches logical branch names (`main`, `v1.2.3`), never full ref paths.
     params {
-        param("build.branchFilter", "+:*")
-        // The underlying VCS root's own Branch Specification (configured on
-        // the server) must also include `+:refs/tags/(v*)` for tag pushes to
-        // resolve %teamcity.build.branch% to the bare version in DeployProduction.
-        param(
-            "build.branchSpecification",
-            """
-                +:refs/heads/(*)
-                +:refs/tags/(v*)
-            """.trimIndent(),
-        )
-
         // AUTH_SECRET passthrough for each environment — blank by default so a
         // fresh deploy doesn't clobber whatever secret is already in the
         // cluster. Fill in via the TeamCity UI (Edit Configuration > Parameters).
@@ -42,15 +34,4 @@ project {
     buildType(BuildAndPublish)
     buildType(DeployStaging)
     buildType(DeployProduction)
-
-    features {
-        dockerECRRegistry {
-            id = variables.ecrConnectionName
-            displayName = "Amazon ECR"
-            registryId = variables.ecrAccountNumber
-            credentialsProvider = defaultCredentialsProvider()
-            regionCode = variables.ecrRegion
-            credentialsType = accessKeys()
-        }
-    }
 }

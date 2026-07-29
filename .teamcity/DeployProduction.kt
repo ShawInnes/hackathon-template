@@ -1,4 +1,6 @@
 import Common.commonFeatures
+import Common.createKubeConfig
+import Common.installKubectlEnvsubstAndHelm
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.DslContext
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
@@ -9,8 +11,10 @@ import jetbrains.buildServer.configs.kotlin.triggers.vcs
  * the exact bits that were validated in staging) and deploys it to production.
  *
  * Triggered by pushing a `vX.Y.Z` tag. Requires the VCS root's branch
- * specification to include `+:refs/tags/(v*)` so %teamcity.build.branch%
- * resolves to the bare version (e.g. "v1.2.3") rather than the full ref path.
+ * specification to include `+:refs/tags/(v*)` — the parentheses make the
+ * logical branch name `v1.2.3` (not `1.2.3`), which is what the filters below
+ * and %teamcity.build.branch% both resolve against. Branch filters match
+ * logical names, never full ref paths like `refs/tags/v1.2.3`.
  */
 object DeployProduction : BuildType({
     id("DeployProduction")
@@ -27,12 +31,12 @@ object DeployProduction : BuildType({
     vcs {
         root(DslContext.settingsRoot)
         cleanCheckout = true
-        branchFilter = "+:refs/tags/v*"
+        branchFilter = "+:v*"
     }
 
     triggers {
         vcs {
-            branchFilter = "+:refs/tags/v*"
+            branchFilter = "+:v*"
         }
     }
 
@@ -47,6 +51,16 @@ object DeployProduction : BuildType({
                 deploy/scripts/promote.sh "${variables.ecrRegistryBase}" "${'$'}VERSION"
             """.trimIndent()
         }
+        installKubectlEnvsubstAndHelm()
+        createKubeConfig()
+        script {
+            name = "Ensure namespace exists"
+            scriptContent = """
+                #!/usr/bin/env bash
+                set -euo pipefail
+                deploy/scripts/ensure-namespace.sh
+            """.trimIndent()
+        }        
         script {
             name = "Helm upgrade --install (production)"
             scriptContent = """
@@ -54,7 +68,7 @@ object DeployProduction : BuildType({
                 set -euo pipefail
                 VERSION="%teamcity.build.branch%"
                 VERSION="${'$'}{VERSION#v}"
-                deploy/scripts/deploy.sh production "${'$'}VERSION" "${variables.eksClusterName}" "${variables.ecrRegion}" "${variables.ecrRegistryBase}"
+                deploy/scripts/deploy.sh production "${'$'}VERSION" "${variables.ecrRegistryBase}"
             """.trimIndent()
         }
     }
