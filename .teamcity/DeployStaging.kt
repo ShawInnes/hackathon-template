@@ -26,9 +26,19 @@ object DeployStaging : BuildType({
     allowExternalStatus = true
 
     params {
-        // Leave blank to keep whatever AUTH_SECRET is already in the cluster —
-        // deploy.sh only passes --set-string when this is non-empty.
-        password("env.AUTH_SECRET", "%staging.authSecret%")
+        // Re-exposes the sha actually deployed to staging, so DeployProduction
+        // can promote by sha instead of the mutable :staging tag.
+        param("outputs.imageTag", asDependency("outputs.imageTag", "BuildAndPublish"))
+        // Re-exposes the version minted by BuildAndPublish so
+        // DeployProduction — which snapshots this build, not
+        // BuildAndPublish directly — knows which already-tagged image to
+        // promote.
+        param("outputs.version", asDependency("outputs.version", "BuildAndPublish"))
+        // CNPG backup bucket/role, set as parent-project Configuration
+        // Parameters. deploy.sh passes them into the chart; the chart's
+        // required() guard fails the deploy if either is missing.
+        param("env.CNPG_BACKUP_BUCKET", "%CNPG_BACKUP_BUCKET%")
+        param("env.CNPG_BACKUP_ROLE", "%CNPG_BACKUP_ROLE%")
     }
 
     vcs {
@@ -50,6 +60,14 @@ object DeployStaging : BuildType({
     }
 
     steps {
+        script {
+            name = "Set build number from version"
+            scriptContent = """
+                #!/usr/bin/env bash
+                set -euo pipefail
+                echo "##teamcity[buildNumber '%outputs.version%']"
+            """.trimIndent()
+        }
         installKubectlEnvsubstAndHelm()
         createKubeConfig()
         script {

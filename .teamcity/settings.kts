@@ -24,11 +24,6 @@ project {
     // trigger to match. Each build type sets its own branchFilter, which
     // matches logical branch names (`main`, `v1.2.3`), never full ref paths.
     params {
-        // AUTH_SECRET passthrough for each environment — blank by default so a
-        // fresh deploy doesn't clobber whatever secret is already in the
-        // cluster. Fill in via the TeamCity UI (Edit Configuration > Parameters).
-        password("staging.authSecret", "")
-        password("production.authSecret", "")
     }
 
     buildType(BuildAndPublish)
