@@ -36,7 +36,7 @@ export function Navbar({ user }: NavbarProps) {
                   <Avatar
                     name={user.name ?? user.email ?? "?"}
                     src={user.image ?? undefined}
-                    size="tiny"
+                    size="xsm"
                   />
                 ),
                 variant: "ghost",
