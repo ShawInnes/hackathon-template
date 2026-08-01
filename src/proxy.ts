@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { getLogger } from "@logtape/logtape"
 
 // Add paths that require authentication here.
 // Cookie presence check below is optimistic — no signature verification.
@@ -10,6 +11,11 @@ const PROTECTED_PATHS = ["/profile"]
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 
 export function proxy(request: NextRequest) {
+  getLogger(["app", "request"]).info("{method} {path}", {
+    method: request.method,
+    path: request.nextUrl.pathname,
+  })
+
   const isProtected = PROTECTED_PATHS.some((path) => request.nextUrl.pathname.startsWith(path))
 
   if (!isProtected) return

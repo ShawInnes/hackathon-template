@@ -1,11 +1,14 @@
 "use client"
 
 import { useEffect } from "react"
+import { getLogger } from "@logtape/logtape"
 import { Center } from "@astryxdesign/core/Center"
 import { VStack } from "@astryxdesign/core/VStack"
 import { Heading } from "@astryxdesign/core/Heading"
 import { Text } from "@astryxdesign/core/Text"
 import { Button } from "@astryxdesign/core/Button"
+
+const logger = getLogger(["app", "ui"])
 
 export default function Error({
   error,
@@ -15,7 +18,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error(error)
+    logger.error("Route error: {message}", { message: error.message, digest: error.digest })
   }, [error])
 
   return (

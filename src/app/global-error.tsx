@@ -1,6 +1,9 @@
 "use client"
 
 import { useEffect } from "react"
+import { getLogger } from "@logtape/logtape"
+
+const logger = getLogger(["app", "ui"])
 
 export default function GlobalError({
   error,
@@ -10,7 +13,7 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error(error)
+    logger.error("Global error: {message}", { message: error.message, digest: error.digest })
   }, [error])
 
   return (

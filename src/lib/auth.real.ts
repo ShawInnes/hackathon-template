@@ -2,6 +2,9 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
+import { getLogger } from "@logtape/logtape"
+
+const logger = getLogger(["app", "auth"])
 
 const DiscoverySchema = z.object({ userinfo_endpoint: z.string().url().optional() }).passthrough()
 const UserinfoSchema = z
@@ -21,7 +24,7 @@ async function getUserinfoUrl(issuer: string): Promise<string | null> {
     const discovery = DiscoverySchema.parse(raw)
     cachedUserinfoUrl = discovery.userinfo_endpoint ?? null
   } catch {
-    console.error("[auth] OIDC discovery fetch failed")
+    logger.error("OIDC discovery fetch failed")
   }
   return cachedUserinfoUrl
 }
@@ -61,9 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }).then((r) => r.json())
             const userinfo = UserinfoSchema.parse(raw)
 
-            if (process.env.NODE_ENV === "development") {
-              console.log("[auth] userinfo:", JSON.stringify(userinfo, null, 2))
-            }
+            logger.debug("userinfo received", { userinfo })
 
             await prisma.user.update({
               where: { id: user.id },
@@ -75,7 +76,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             })
           }
         } catch (e) {
-          console.error("[auth] userinfo fetch/update failed:", e)
+          logger.error("userinfo fetch/update failed: {message}", {
+            message: e instanceof Error ? e.message : String(e),
+          })
         }
       }
       return true

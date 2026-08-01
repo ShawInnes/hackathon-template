@@ -8,6 +8,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
 - **Auth.js v5** — OIDC SSO via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations, auto-provisioned locally via Docker Compose
 - **Astryx design system** — `@astryxdesign/core` components (Button, Card, Avatar, DropdownMenu, AppShell, ...), with Tailwind CSS as a token-backed styling escape hatch
+- **LogTape** — structured logging (`src/lib/logger.ts`), with request logging in `src/proxy.ts` and global error/exception capture via `src/instrumentation.ts`'s `onRequestError` hook
 - **Claude Code skills** — OpenSpec workflow, component scaffolding, debugging
 
 ## Getting started
@@ -30,6 +31,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
    | `AUTH_OIDC_ISSUER` | OIDC issuer URL — provided by hackathon organisers |
    | `AUTH_SECRET`      | Run: `openssl rand -base64 32`                     |
    | `DATABASE_URL`     | Optional — leave unset and `npm run dev` provisions a local Postgres via Docker Compose automatically. Set it to point at an existing Postgres instance instead |
+   | `LOG_LEVEL`        | Optional — one of `trace`, `debug`, `info`, `warning`, `error`, `fatal`. Defaults to `debug` in development, `info` in production |
 
 4. **Run** the dev server:
    ```bash

@@ -22,7 +22,7 @@ const EnvSchema = z
       .transform((v) => v === "true"),
     AUTH_OIDC_ID: z.string().optional(),
     AUTH_OIDC_ISSUER: z.url().optional(),
-    LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).optional(),
+    LOG_LEVEL: z.enum(["trace", "debug", "info", "warning", "error", "fatal"]).optional(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   })
   .refine((e) => !e.AUTH_ENABLED || Boolean(e.AUTH_OIDC_ID), {

@@ -1,25 +1,3 @@
-import pino from "pino"
+import { getLogger } from "@logtape/logtape"
 
-const isDev = process.env.NODE_ENV !== "production"
-
-export const logger = pino({
-  level: process.env.LOG_LEVEL ?? (isDev ? "debug" : "info"),
-  ...(isDev && {
-    transport: {
-      target: "pino-pretty",
-      options: { colorize: true, translateTime: "HH:MM:ss.l", ignore: "pid,hostname" },
-    },
-  }),
-  redact: {
-    paths: [
-      "req.headers.authorization",
-      "req.headers.cookie",
-      "*.password",
-      "*.token",
-      "*.access_token",
-      "*.refresh_token",
-      "*.id_token",
-    ],
-    censor: "[REDACTED]",
-  },
-})
+export const logger = getLogger(["app"])

@@ -18,7 +18,7 @@ export async function GET() {
     dbOk = true
   } catch (e) {
     dbError = e instanceof Error ? e.message : "unknown"
-    logger.error({ err: e }, "[health] db ping failed")
+    logger.error("db ping failed: {message}", { message: dbError })
   }
 
   const ok = dbOk
