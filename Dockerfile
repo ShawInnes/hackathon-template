@@ -2,7 +2,7 @@
 FROM node:24-alpine AS base
 
 # Install system dependencies needed for native modules
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat python3 make g++ git
 
 # Set working directory
 WORKDIR /app
