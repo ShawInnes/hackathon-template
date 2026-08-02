@@ -1,35 +1,9 @@
-import { configure, getConsoleSink, getLogger, jsonLinesFormatter } from "@logtape/logtape"
-import { prettyFormatter } from "@logtape/pretty"
-import { DEFAULT_REDACT_FIELDS, redactByField } from "@logtape/redaction"
 import type { Instrumentation } from "next"
-import { env } from "@/lib/env"
-
-const isDev = env.NODE_ENV !== "production"
+import { getLogger } from "@logtape/logtape"
+import { configureLogging } from "@/lib/logger"
 
 export async function register() {
-  await configure({
-    sinks: {
-      console: redactByField(
-        getConsoleSink({ formatter: isDev ? prettyFormatter : jsonLinesFormatter }),
-        [
-          /authorization/i,
-          /cookie/i,
-          /access[_-]?token/i,
-          /refresh[_-]?token/i,
-          /id[_-]?token/i,
-          ...DEFAULT_REDACT_FIELDS,
-        ],
-      ),
-    },
-    loggers: [
-      {
-        category: ["app"],
-        lowestLevel: env.LOG_LEVEL ?? (isDev ? "debug" : "info"),
-        sinks: ["console"],
-      },
-      { category: "logtape", sinks: ["console"], lowestLevel: "error" },
-    ],
-  })
+  await configureLogging()
 }
 
 export const onRequestError: Instrumentation.onRequestError = (err, request, context) => {

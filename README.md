@@ -9,6 +9,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
 - **Prisma + PostgreSQL** — database with migrations, auto-provisioned locally via Docker Compose
 - **Astryx design system** — `@astryxdesign/core` components (Button, Card, Avatar, DropdownMenu, AppShell, ...), with Tailwind CSS as a token-backed styling escape hatch
 - **LogTape** — structured logging (`src/lib/logger.ts`), with request logging in `src/proxy.ts` and global error/exception capture via `src/instrumentation.ts`'s `onRequestError` hook
+- **Graphile Worker** — Postgres-backed background job queue (`worker/`), for work that shouldn't block a request/response cycle
 - **Claude Code skills** — OpenSpec workflow, component scaffolding, debugging
 
 ## Getting started
@@ -92,12 +93,39 @@ npx astryx component <component-name>
 /opsx:archive my-feature-name    # archives when done
 ```
 
+### Add a background job
+
+Background jobs run in a separate process (`worker/index.ts`) via [Graphile Worker](https://worker.graphile.org/), a Postgres-backed job queue. Use this for work that shouldn't block a request/response cycle — it enqueues a row in Postgres and returns immediately; the worker process picks it up.
+
+Graphile Worker manages its own `graphile_worker` schema in Postgres automatically — no Prisma migration needed.
+
+1. **Define** the task name and payload type in `src/lib/jobs/tasks.ts`.
+2. **Add an enqueue helper** in `src/lib/jobs/enqueue.ts` that calls `utils.addJob(TASK_NAME, payload)`.
+3. **Register a handler** for the task name in `worker/index.ts`'s `taskList`.
+
+Call the enqueue helper from a server action or route handler:
+
+```typescript
+import { enqueueLogMessage } from "@/lib/jobs/enqueue"
+
+await enqueueLogMessage({ message: "hello from a server action" })
+```
+
+Run the worker in a separate terminal (it is not started by `npm run dev`):
+
+```bash
+npm run worker:dev   # restarts on file changes
+npm run worker       # no watch, for production
+```
+
 ## npm scripts
 
 | Script                   | Purpose                                       |
 | ------------------------ | --------------------------------------------- |
 | `npm run dev`            | Start dev server at localhost:3000            |
 | `npm run build`          | Production build                              |
+| `npm run worker`         | Run the background job worker (Graphile Worker) |
+| `npm run worker:dev`     | Run the worker, restarting on file changes    |
 | `npm run test`           | Run tests                                     |
 | `npm run test:watch`     | Run tests in watch mode                       |
 | `npm run prisma:migrate` | Create a new migration                        |
