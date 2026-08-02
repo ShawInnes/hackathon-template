@@ -118,6 +118,10 @@ npm run worker:dev   # restarts on file changes
 npm run worker       # no watch, for production
 ```
 
+Sign in and open **Worker Status** from the avatar menu (`/worker`) to see live queue counts, enqueue a test job, and inspect recent jobs.
+
+The production Docker image (see [Deployment](#deployment)) ships the full app — including `worker/` and the full `node_modules` tree — so the same image runs either role: `npm run start` for the web server, or `npm run worker` for the background worker, selected via the container command.
+
 ## npm scripts
 
 | Script                   | Purpose                                       |
@@ -156,6 +160,8 @@ deploy/
 ```
 
 Postgres is provisioned in-cluster via a CNPG `Cluster` resource (toggle with `postgres.enabled` in values) and its connection string is injected as `DATABASE_URL` automatically. Set `postgres.enabled: false` and configure `externalDatabase` in values to point at an external Postgres instead.
+
+**The worker is not yet deployed by the Helm chart.** The built image supports both roles (see [Add a background job](#add-a-background-job)), but `deploy/chart/templates/` currently only defines a `Deployment` for the web role. To run the worker in a deployed environment, add a second `Deployment` (or `Job`) template that uses the same image with its command overridden to `npm run worker`.
 
 ### Deploying manually
 

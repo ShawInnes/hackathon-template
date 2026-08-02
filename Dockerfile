@@ -29,6 +29,12 @@ RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma gene
 RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npm run build
 
 # Production stage
+#
+# Ships the full built app (not just Next's pruned `.next/standalone` output)
+# because the worker (worker/index.ts) runs via `tsx` directly against source
+# and needs the full node_modules tree + src/. One image, two roles — run
+# `npm run start` for the web server or `npm run worker` for the background
+# job worker, selected via the container command.
 FROM node:24-alpine AS runner
 
 # Install runtime dependencies
@@ -41,21 +47,21 @@ RUN adduser --system --uid 1001 nextjs
 # Set working directory
 WORKDIR /app
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
+# Copy the full built application — Next server output, source (worker/,
+# src/ including the generated Prisma client), and full node_modules
+# (already contains prisma and tsx from the builder's `npm ci`, so no
+# separate runtime install step is needed).
+COPY --from=builder --chown=nextjs:nextjs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nextjs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nextjs /app/src ./src
+COPY --from=builder --chown=nextjs:nextjs /app/worker ./worker
 COPY --from=builder --chown=nextjs:nextjs /app/public ./public
-COPY --from=builder --chown=nextjs:nextjs /app/healthcheck.js ./healthcheck.js
-
-# Prisma assets needed at runtime for `migrate deploy`
+COPY --from=builder --chown=nextjs:nextjs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nextjs /app/next.config.ts ./next.config.ts
+COPY --from=builder --chown=nextjs:nextjs /app/tsconfig.json ./tsconfig.json
 COPY --from=builder --chown=nextjs:nextjs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nextjs /app/prisma.config.ts ./prisma.config.ts
-
-# Install Prisma CLI fresh — npm creates .bin/prisma as a proper symlink, so the
-# WASM loader resolves prisma_schema_build_bg.wasm correctly. Pinned to match
-# package.json; bump together when upgrading prisma.
-RUN npm install --no-save --no-audit --no-fund prisma@^7.7.0 dotenv \
-    && chown -R nextjs:nextjs node_modules
+COPY --from=builder --chown=nextjs:nextjs /app/healthcheck.js ./healthcheck.js
 
 # Entrypoint script (runs migrations before starting the app)
 COPY --chown=nextjs:nextjs docker-entrypoint.sh ./docker-entrypoint.sh
@@ -79,5 +85,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Use dumb-init to handle signals properly, then run migrations via entrypoint
 ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
 
-# Start the application
-CMD ["node", "server.js"]
+# Start the web server by default; override the container command with
+# `npm run worker` to run the background job worker from the same image.
+CMD ["npm", "run", "start"]
