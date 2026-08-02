@@ -6,7 +6,7 @@ import { getLogger } from "@logtape/logtape"
 // Cookie presence check below is optimistic — no signature verification.
 // Every protected page MUST also call auth() server-side.
 // Note: "/" is a public landing page — do not add it here.
-const PROTECTED_PATHS = ["/profile"]
+const PROTECTED_PATHS = ["/profile", "/worker"]
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED === "true"
 

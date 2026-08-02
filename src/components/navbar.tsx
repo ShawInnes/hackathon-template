@@ -45,6 +45,7 @@ export function Navbar({ user }: NavbarProps) {
                 { label: user.email ?? "", isDisabled: true },
                 { type: "divider" },
                 { label: "Profile", onClick: () => router.push("/profile") },
+                { label: "Worker Status", onClick: () => router.push("/worker") },
                 { label: "Sign out", onClick: () => signOutAction() },
               ]}
             />
