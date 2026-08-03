@@ -21,6 +21,10 @@ async function main() {
     taskList: {
       [LOG_MESSAGE]: async (payload) => {
         const { message } = payload as LogMessagePayload
+        // Deliberate delay — a real task without one completes and is
+        // deleted (Graphile Worker keeps no history) before the status page
+        // can ever observe it as pending/running.
+        await new Promise((resolve) => setTimeout(resolve, 5000))
         workerLogger.info("logMessage: {message}", { message })
       },
     },
