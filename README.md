@@ -33,6 +33,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
    | `AUTH_SECRET`      | Run: `openssl rand -base64 32`                     |
    | `DATABASE_URL`     | Optional — leave unset and `npm run dev` provisions a local Postgres via Docker Compose automatically. Set it to point at an existing Postgres instance instead |
    | `LOG_LEVEL`        | Optional — one of `trace`, `debug`, `info`, `warning`, `error`, `fatal`. Defaults to `debug` in development, `info` in production |
+   | `ENABLE_WORKER`    | Optional — `"true"` to expose the Worker Status page and avatar menu item. Defaults to disabled |
 
 4. **Run** the dev server:
    ```bash
@@ -118,7 +119,7 @@ npm run worker:dev   # restarts on file changes
 npm run worker       # no watch, for production
 ```
 
-Sign in and open **Worker Status** from the avatar menu (`/worker`) to see live queue counts, enqueue a test job, and inspect recent jobs.
+Set `ENABLE_WORKER="true"` (see the env var table above) to expose **Worker Status** in the avatar menu and at `/worker` — it shows live queue counts, lets you enqueue a test job, and lists recent jobs. Disabled by default; the route 404s and the menu item is hidden when unset.
 
 The production Docker image (see [Deployment](#deployment)) ships the full app — including `worker/` and the full `node_modules` tree — so the same image runs either role: `npm run start` for the web server, or `npm run worker` for the background worker, selected via the container command.
 

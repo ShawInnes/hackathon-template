@@ -43,4 +43,19 @@ describe("Navbar", () => {
     render(<Navbar user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }} />)
     expect(screen.getByText("Profile")).toBeInTheDocument()
   })
+
+  it("hides the Worker Status menu item when workerEnabled is not set", () => {
+    render(<Navbar user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }} />)
+    expect(screen.queryByText("Worker Status")).not.toBeInTheDocument()
+  })
+
+  it("shows the Worker Status menu item when workerEnabled is true", () => {
+    render(
+      <Navbar
+        user={{ name: "Ada Lovelace", email: "ada@example.com", image: null }}
+        workerEnabled
+      />,
+    )
+    expect(screen.getByText("Worker Status")).toBeInTheDocument()
+  })
 })

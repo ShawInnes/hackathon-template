@@ -1,5 +1,6 @@
 import { AppShell } from "@astryxdesign/core/AppShell"
 import { Navbar, NavbarUser } from "@/components/navbar"
+import { env } from "@/lib/env"
 
 interface PageLayoutProps {
   children: React.ReactNode
@@ -21,7 +22,10 @@ function toNavbarUser(user: PageLayoutProps["user"]): NavbarUser | null {
 
 export function PageLayout({ children, user }: PageLayoutProps) {
   return (
-    <AppShell topNav={<Navbar user={toNavbarUser(user)} />} contentPadding={4}>
+    <AppShell
+      topNav={<Navbar user={toNavbarUser(user)} workerEnabled={env.ENABLE_WORKER} />}
+      contentPadding={4}
+    >
       {children}
     </AppShell>
   )

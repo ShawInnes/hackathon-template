@@ -22,6 +22,10 @@ const EnvSchema = z
       .transform((v) => v === "true"),
     AUTH_OIDC_ID: z.string().optional(),
     AUTH_OIDC_ISSUER: z.url().optional(),
+    ENABLE_WORKER: z
+      .enum(["true", "false"])
+      .optional()
+      .transform((v) => v === "true"),
     LOG_LEVEL: z.enum(["trace", "debug", "info", "warning", "error", "fatal"]).optional(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   })

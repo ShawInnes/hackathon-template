@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { env } from "@/lib/env"
 import { PageLayout } from "@/components/page-layout"
 import { getQueueStats, getRecentJobs, jobStatus, type JobRow } from "@/lib/jobs/status"
 import { EnqueueTestJobForm } from "@/components/enqueue-test-job-form"
@@ -31,6 +32,10 @@ function toTableRow(job: JobRow): JobTableRow {
 }
 
 export default async function WorkerStatusPage() {
+  if (!env.ENABLE_WORKER) {
+    notFound()
+  }
+
   const session = await auth()
 
   if (!session?.user) {

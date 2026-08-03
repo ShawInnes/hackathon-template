@@ -17,9 +17,10 @@ export interface NavbarUser {
 
 interface NavbarProps {
   user: NavbarUser | null
+  workerEnabled?: boolean
 }
 
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user, workerEnabled = false }: NavbarProps) {
   const router = useRouter()
 
   return (
@@ -45,7 +46,9 @@ export function Navbar({ user }: NavbarProps) {
                 { label: user.email ?? "", isDisabled: true },
                 { type: "divider" },
                 { label: "Profile", onClick: () => router.push("/profile") },
-                { label: "Worker Status", onClick: () => router.push("/worker") },
+                ...(workerEnabled
+                  ? [{ label: "Worker Status", onClick: () => router.push("/worker") }]
+                  : []),
                 { label: "Sign out", onClick: () => signOutAction() },
               ]}
             />
