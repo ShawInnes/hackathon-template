@@ -4,27 +4,9 @@ Next.js 16 App Router hackathon project. TypeScript, Astryx design system (`@ast
 
 Detailed rules live in `.claude/rules/` and load automatically — each file's frontmatter carries its own `description` and (if scoped) `globs`; a file with no `globs` is always active. This CLAUDE.md is an index, not a mirror of that content.
 
-## Mandatory Workflow
+## Workflow
 
-Follow this sequence for every non-trivial task. Do not skip steps.
-
-1. **Clarify** — Ask questions to resolve ambiguity. Do not assume intent. If the request is clear and specific, state your understanding and confirm before proceeding.
-2. **Plan** — Propose an approach: what changes, which files, what trade-offs. Wait for approval. Use `EnterPlanMode` for multi-file changes.
-3. **Implement** — Execute the approved plan. Offload research/exploration to subagents (`Explore`) to keep context clean; re-plan immediately if something goes sideways instead of pushing through.
-4. **Verify** — Run the commands in `## Verification` before calling a task done. Never mark something complete on the strength of the diff alone.
-
-Skip to step 3 only for single-line fixes, typos, or tasks where the user gave explicit, unambiguous instructions. For bug reports with a reproducible failure (failing test, error log), fix the root cause directly rather than asking for hand-holding.
-
-## OpenSpec Workflow
-
-Use OpenSpec for all structured feature work:
-
-| Command | Purpose |
-|---------|---------|
-| `/opsx:explore [topic]` | Explore and think through ideas — read-only |
-| `/opsx:propose [name]` | Create a new change and generate all artifacts |
-| `/opsx:apply [name]` | Implement tasks from a change |
-| `/opsx:archive [name]` | Archive a completed change |
+Default to implementing directly — this is a hackathon, optimise for speed. Only ask a clarifying question first if the request is genuinely ambiguous (conflicting requirements, no reasonable default); otherwise pick the sensible default and go. Don't restate your understanding before starting, and don't stop for plan approval on multi-file changes — the diff is the plan. Offload research/exploration to subagents (`Explore`) to keep context clean. Run the commands in `## Verification` after you're done, not as a gate before starting.
 
 ## Helper Skills
 

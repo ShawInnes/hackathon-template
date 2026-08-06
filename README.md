@@ -10,7 +10,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
 - **Astryx design system** — `@astryxdesign/core` components (Button, Card, Avatar, DropdownMenu, AppShell, ...), with Tailwind CSS as a token-backed styling escape hatch
 - **LogTape** — structured logging (`src/lib/logger.ts`), with request logging in `src/proxy.ts` and global error/exception capture via `src/instrumentation.ts`'s `onRequestError` hook
 - **Graphile Worker** — Postgres-backed background job queue (`worker/`), for work that shouldn't block a request/response cycle
-- **Claude Code skills** — OpenSpec workflow, component scaffolding, debugging
+- **Claude Code skills** — component scaffolding, debugging
 
 ## Getting started
 
@@ -84,14 +84,6 @@ npx astryx component <component-name>
 
 # Or use the Claude Code skill to scaffold a custom component
 # In Claude Code: /create-nextjs-component
-```
-
-### Plan a feature with OpenSpec
-
-```
-/opsx:propose my-feature-name    # creates proposal, design, tasks
-/opsx:apply my-feature-name      # implements the tasks
-/opsx:archive my-feature-name    # archives when done
 ```
 
 ### Add a background job
