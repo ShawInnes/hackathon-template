@@ -1,5 +1,6 @@
 ---
-description: ALWAYS ACTIVE. All navigable UI state (tabs, filters, pagination, modals) must be reflected in the URL for deep linking. Never use client-only state for switchable views.
+description: All navigable UI state (tabs, filters, pagination, modals) must be reflected in the URL for deep linking. Never use client-only state for switchable views.
+globs: ["src/components/**", "src/app/**/*.tsx"]
 ---
 
 # URL-Driven Navigation State

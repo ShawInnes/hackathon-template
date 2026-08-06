@@ -65,5 +65,5 @@ returns `unknown` typing.
 
 ## See also
 
-- `worker-jobs` skill (`.claude/skills/worker-jobs/SKILL.md`) — worked example
-  including the status page pattern used in this app (`src/app/worker/`).
+- The worker status page pattern already implemented in this app
+  (`src/app/worker/`) is a worked example of querying `graphile_worker.jobs`.

@@ -8,7 +8,8 @@
       "Bash(git *)",
       "Bash(mkdir -p *)",
       "Bash(openssl rand *)",
-      "Bash(curl -s*)"
+      "Bash(curl -s*)",
+      "Bash(tmux *)"
     ],
     "deny": [
       "Bash(git push --force*)",

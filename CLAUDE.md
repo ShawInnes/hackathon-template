@@ -10,15 +10,10 @@ Default to implementing directly — this is a hackathon, optimise for speed. On
 
 ## Helper Skills
 
-Invoke these skills (via the `Skill` tool) for the patterns below. Each is a self-contained guide with install commands, code patterns, and verification checklist.
+Invoke these skills (via the `Skill` tool) for the patterns below. Each is a self-contained guide with install commands, code patterns, and verification checklist. Patterns for Zod, TanStack Form/Query/Table, code quality, and worker jobs live in the matching `.claude/rules/*.md` file instead — those load automatically when you touch relevant files, no explicit invoke needed.
 
 | Skill | Use when |
 |-------|----------|
-| `zod-schemas` | Adding a DTO, server action input, env var, or external API response shape |
-| `tanstack-table` | Building a data table with sort/filter/pagination/selection |
-| `tanstack-form` | Building a form with 3+ fields or non-trivial validation |
-| `tanstack-query` | Adding client-side caching, mutations with optimistic UI, polling, or infinite scroll |
-| `code-quality` | Configuring or fixing Prettier / ESLint / lint-staged / pre-commit hooks |
 | `secrets-scanning` | Setting up gitleaks, recovering from a leaked secret, adding new env vars |
 | `create-nextjs-component` | Creating any new React component |
 

@@ -57,7 +57,7 @@ Keep allowlists narrow — never `regexes = ['''.*''']`. Document why each entry
 ## Adding a new secret-bearing env var
 
 1. Add to `.env.example` with a placeholder (`SECRET_KEY=replace-me`).
-2. Add to the Zod env schema (`src/lib/env.ts` — see `zod-schemas` skill).
+2. Add to the Zod env schema (`src/lib/env.ts` — see `zod-schemas` rule).
 3. Add to deployment env (Vercel / docker / wherever).
 4. Never hardcode for "local testing" — use `.env.local`.
 
