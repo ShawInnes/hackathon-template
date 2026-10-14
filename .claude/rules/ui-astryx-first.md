@@ -16,3 +16,7 @@ npx astryx template <name>      # scaffold or study a page/block recipe
 Custom styling: use component props first. If no prop covers the need, fall back to Tailwind utility classes backed by tokens (`@astryxdesign/core/tailwind-theme.css`) — never raw hex/px values or inline `style={{}}`.
 
 Never write raw HTML for elements that Astryx covers.
+
+For micro-interaction behavior, consult Interior (https://www.interior.dev/docs/)
+after discovering the Astryx primitive. Adapt its source to Astryx components and
+tokens; follow `ui-interior.md` for ownership, accessibility, and motion guidance.

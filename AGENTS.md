@@ -34,3 +34,27 @@ MORE CLI:
   swizzle <Name>     eject component source for deep customization
   upgrade --apply    run after any @astryxdesign/core bump
 <!-- ASTRYX:END -->
+
+## Interior micro-interactions
+
+Interior is the default source for interaction patterns: https://www.interior.dev/docs/.
+It distributes copyable React source, not an npm component package. Its runtime
+dependency, `motion`, is included; import animation APIs from `motion/react`.
+
+- Discover Astryx primitives first, then read the matching Interior page's usage,
+  source, and props before implementing motion or feedback. Useful starting points:
+  `copy-button`, `loading-button`, `skeleton-swap`, `value-flash`, and `reorder-list`.
+- Reuse existing local implementations. Save adapted components in
+  `src/components/interior/<pattern>.tsx` and import from `@/components/interior/...`.
+  Include the source page URL in the file. Copy only patterns the feature needs.
+- Keep Astryx responsible for components, layout, and design tokens. Adapt Interior's
+  behavior to those primitives; do not paste its raw layout wrappers, hardcoded
+  colors/dimensions, arbitrary Tailwind values, or inline styling into this app.
+  Check Astryx's documented ref/prop support before applying Motion to a component.
+- Keep `"use client"` at the interactive leaf. Pass application actions and data in
+  through props; keep pages/layouts as Server Components where possible.
+- Preserve reduced-motion handling (`useReducedMotion`), stable dimensions across
+  states, interruptible transitions, keyboard/focus behavior, and accessible status
+  feedback. Motion must never be the only way a user can understand a state change.
+- Verify rapid repeated input, async success/failure, unmount cleanup, keyboard use,
+  and reduced motion when adapting a pattern.

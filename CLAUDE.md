@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Next.js 16 App Router hackathon project. TypeScript, Astryx design system (`@astryxdesign/core`, Tailwind as a token-backed escape hatch), Auth.js v5 (OIDC PKCE — see `authjs-v5` rule), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
+Next.js 16 App Router hackathon project. TypeScript, Astryx design system (`@astryxdesign/core`, Tailwind as a token-backed escape hatch), Interior micro-interaction patterns (https://www.interior.dev/docs/, copied source powered by the included `motion` dependency), Auth.js v5 (OIDC PKCE — see `authjs-v5` rule), Prisma 7 ORM, PostgreSQL. Turbopack is the default bundler.
 
 Detailed rules live in `.claude/rules/` and load automatically — each file's frontmatter carries its own `description` and (if scoped) `globs`; a file with no `globs` is always active. This CLAUDE.md is an index, not a mirror of that content.
 
@@ -21,7 +21,7 @@ Invoke these skills (via the `Skill` tool) for the patterns below. Each is a sel
 
 Always active — read their frontmatter for the exact constraint: `genai-llm-integration`, `ui-url-driven-navigation`, `adding-features`, `check-before-creating`, `no-overengineering`, `no-todos-or-partials`, `no-orphan-features`, `commit-after-feature`, `dev-server`, `zod-schemas`, `code-quality`, `secrets-handling`.
 
-Loaded when touching matching files — `src/components/**` / `src/app/**/*.tsx`: `ui-astryx-first`, `ui-component-reuse`, `ui-scroll-patterns`, `tanstack-table`, `tanstack-form`, `tanstack-query`. Other scopes: `prisma` (`prisma/**`), `authjs-v5` (`src/lib/auth.ts`), `devcontainer` (`.devcontainer/**`, `package.json`).
+Loaded when touching matching files — `src/components/**` / `src/app/**/*.tsx`: `ui-astryx-first`, `ui-interior`, `ui-component-reuse`, `ui-scroll-patterns`, `tanstack-table`, `tanstack-form`, `tanstack-query`. Other scopes: `prisma` (`prisma/**`), `authjs-v5` (`src/lib/auth.ts`), `devcontainer` (`.devcontainer/**`, `package.json`).
 
 ## Prisma Workflow
 

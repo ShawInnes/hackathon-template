@@ -8,6 +8,7 @@ A Next.js 16 hackathon starter with OIDC SSO auth, PostgreSQL, and Claude Code b
 - **Auth.js v5** — OIDC SSO via PKCE (no client secret needed)
 - **Prisma + PostgreSQL** — database with migrations, auto-provisioned locally via Docker Compose
 - **Astryx design system** — `@astryxdesign/core` components (Button, Card, Avatar, DropdownMenu, AppShell, ...), with Tailwind CSS as a token-backed styling escape hatch
+- **Interior micro-interactions** — [copyable React patterns](https://www.interior.dev/docs/) for motion and feedback, with `motion` included by default and coding-agent guidance for adapting them to Astryx
 - **LogTape** — structured logging (`src/lib/logger.ts`), with request logging in `src/proxy.ts` and global error/exception capture via `src/instrumentation.ts`'s `onRequestError` hook
 - **Graphile Worker** — Postgres-backed background job queue (`worker/`), for work that shouldn't block a request/response cycle
 - **Claude Code skills** — component scaffolding, debugging
@@ -85,6 +86,27 @@ npx astryx component <component-name>
 # Or use the Claude Code skill to scaffold a custom component
 # In Claude Code: /create-nextjs-component
 ```
+
+### Add a micro-interaction
+
+[Interior](https://www.interior.dev/docs/) is the default reference for interaction
+patterns such as copy feedback, loading buttons, skeleton swaps, and value changes.
+It provides source files you own; `motion`, its runtime dependency, is already
+included. Import animation APIs from `motion/react`.
+
+1. Discover the Astryx primitive first, then read the matching Interior page's
+   usage, source, and props.
+2. Reuse an existing local adaptation or copy the needed source into
+   `src/components/interior/<pattern>.tsx`, recording its docs URL in a comment.
+3. Adapt the behavior to Astryx components and design tokens. Keep reduced-motion
+   support, stable dimensions across states, keyboard behavior, and accessible
+   feedback. Pass application data and actions through props.
+
+Keep interactive components as client leaves and import them from
+`@/components/interior/...`. Consult [AGENTS.md](AGENTS.md) or the scoped Claude rule
+[ui-interior.md](.claude/rules/ui-interior.md) for the full integration guidance.
+The docs also offer shadcn registry commands; manual copying makes it easier to
+adapt the source to this template's Astryx setup.
 
 ### Add a background job
 

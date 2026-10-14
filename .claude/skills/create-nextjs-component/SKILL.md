@@ -17,6 +17,8 @@ npx astryx template <name>      # scaffold or study a page/block recipe
 
 ## Core Rules
 
+- **Interior for micro-interactions** - After Astryx discovery, consult https://www.interior.dev/docs/ for motion and feedback patterns. `motion` is included by default (`motion/react`). Reuse local adaptations in `src/components/interior/`; otherwise copy only the needed source, record its docs URL, and adapt it to Astryx primitives/tokens. Follow `.claude/rules/ui-interior.md`, including reduced motion, stable dimensions, and accessible feedback.
+
 - **Astryx first** - Always check whether `@astryxdesign/core` already provides the component before building from scratch. Never use a raw `<div>` for layout, spacing, buttons, cards, inputs, dialogs, dropdowns, or avatars — Astryx components do all layout/spacing.
 - **DO NOT OVERENGINEER** - Keep code simple, ≤100 lines per component
 - **One component per file** - Create new files for every component
@@ -280,6 +282,7 @@ const [value, setValue] = useState("");
 - [ ] TypeScript with explicit types
 - [ ] `@/*` path aliases for imports
 - [ ] Astryx component props used before falling back to Tailwind + `cn()`
+- [ ] Interior consulted for micro-interactions; local source reused, Astryx styling retained, reduced motion and accessible feedback preserved
 - [ ] Server component by default (no `"use client"` unless needed)
 - [ ] Properly exported
 - [ ] No TODOs or placeholders
