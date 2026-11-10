@@ -243,3 +243,9 @@ NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 
 Do not set this in production.
+
+## Deployment standard
+
+See [deploy/WORKFLOW.md](deploy/WORKFLOW.md) for TeamCity promotion, SSM secret
+seeding, External Secrets, Docker runtime and migration settings. Application
+configuration is in the environment values files under `deploy/chart/`.

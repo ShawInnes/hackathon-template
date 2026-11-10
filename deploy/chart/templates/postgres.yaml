@@ -14,8 +14,10 @@ spec:
     initdb:
       database: {{ include "app.name" . }}
       owner: {{ include "app.name" . }}
+      {{- if .Values.postgres.appSuperuser }}
       postInitSQL:
         - ALTER ROLE "{{ include "app.name" . }}" WITH SUPERUSER
+      {{- end }}
   postgresql:
     parameters:
       shared_buffers: {{ .Values.postgres.sharedBuffers }}

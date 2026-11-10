@@ -1,6 +1,6 @@
 import Common.commonFeatures
 import Common.createKubeConfig
-import Common.installKubectlAndEnvsubst
+import Common.installKubectlEnvsubstAndHelm
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.DslContext
 import jetbrains.buildServer.configs.kotlin.buildFeatures.vcsLabeling
@@ -65,7 +65,11 @@ object BuildAndPublish : BuildType({
                 echo "##teamcity[buildNumber '${'$'}{VERSION_PREFIX}.%build.counter%']"
             """.trimIndent()
         }
-        installKubectlAndEnvsubst()
+        installKubectlEnvsubstAndHelm()
+        script {
+            name = "Validate deployment configuration"
+            scriptContent = "deploy/scripts/validate.sh"
+        }
         createKubeConfig()
         script {
             name = "Ensure namespace exists"

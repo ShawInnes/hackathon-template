@@ -37,6 +37,7 @@ object DeployStaging : BuildType({
         // CNPG backup bucket/role, set as parent-project Configuration
         // Parameters. deploy.sh passes them into the chart; the chart's
         // required() guard fails the deploy if either is missing.
+        param("env.ADOPT_EXISTING_RESOURCES", "false")
         param("env.CNPG_BACKUP_BUCKET", "%CNPG_BACKUP_BUCKET%")
         param("env.CNPG_BACKUP_ROLE", "%CNPG_BACKUP_ROLE%")
     }
@@ -77,7 +78,7 @@ object DeployStaging : BuildType({
                 set -euo pipefail
                 deploy/scripts/ensure-namespace.sh
             """.trimIndent()
-        }        
+        }
         script {
             name = "Helm upgrade --install (staging)"
             scriptContent = """

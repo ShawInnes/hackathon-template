@@ -3,6 +3,11 @@ node_modules
 .git
 .env
 .env.*
+**/.env
+**/.env.*
+**/*secrets*.json
+kubeconfig.yaml
 .teamcity
 deploy
+manifests
 *.md

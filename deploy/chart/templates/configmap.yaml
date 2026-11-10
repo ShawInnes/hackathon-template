@@ -10,10 +10,11 @@ data:
   APP_NAME: {{ include "app.name" . | quote }}
   NAMESPACE: {{ include "app.namespace" . | quote }}
   AUTH_URL: "https://{{ .Values.ingress.host }}"
+  APP_BASE_URL: "https://{{ .Values.ingress.host }}"
   AUTH_ENABLED: {{ .Values.auth.enabled | quote }}
-  {{- if .Values.auth.oidcId }}
-  AUTH_OIDC_ID: {{ .Values.auth.oidcId | quote }}
+  {{- range $key, $value := .Values.config }}
+  {{- if has $key (list "APP_NAME" "NAMESPACE" "AUTH_URL" "APP_BASE_URL" "AUTH_ENABLED" "DATABASE_URL" "PORT") }}
+  {{- fail (printf "config.%s is reserved" $key) }}
   {{- end }}
-  {{- if .Values.auth.oidcIssuer }}
-  AUTH_OIDC_ISSUER: {{ .Values.auth.oidcIssuer | quote }}
+  {{ $key }}: {{ $value | quote }}
   {{- end }}

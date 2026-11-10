@@ -1,71 +1,57 @@
 #!/usr/bin/env bash
-# Deploy the Helm chart to the cluster targeted by kubeconfig.yaml. Run from
-# the repo root.
-#
-# Usage: deploy.sh <env> <image-tag> <ecr-registry-base>
-#   env               - staging | production (selects deploy/chart/values-<env>.yaml)
-#   image-tag         - image tag to deploy (e.g. "staging" or a semver version)
-#   ecr-registry-base - ECR registry host, e.g. 123.dkr.ecr.ap-southeast-2.amazonaws.com
-#
-# App name, image repository, namespace, and release name are all derived
-# from the git remote via lib.sh — see app_name(). Staging is namespace- and
-# release-isolated from production (both suffixed "-staging").
-#
-# Expects kubeconfig.yaml at the repo root, written by the "Create Kube
-# Config" TeamCity step (decodes the KUBECONFIG_B64 secret) — no AWS
-# credentials are needed for this step.
-#
-# AUTH_SECRET (env var) is passed through to the chart if set; leave unset to
-# reuse whatever value is already in the cluster (helm upgrade won't clear it
-# unless --set-string is passed with an empty value, so only pass it when set).
-#
-# CNPG_BACKUP_BUCKET / CNPG_BACKUP_ROLE (env vars) supply the S3 backup
-# destination and IRSA role for the CNPG cluster. They come from TeamCity
-# project-level parameters, not chart defaults — the chart's `required()`
-# guard fails the deploy if postgres.backup.enabled is true and either is
-# unset.
-
+# Usage: deploy.sh <staging|production> <image-tag> <ecr-registry-base>
 set -euo pipefail
-
 source "$(dirname "$0")/lib.sh"
+export PATH="${HOME}/.local/bin:${PATH}"
 
-ENVIRONMENT="${1:?env is required (staging|production)}"
+ENVIRONMENT="${1:?environment is required (staging|production)}"
 IMAGE_TAG="${2:?image-tag is required}"
 ECR_REGISTRY_BASE="${3:?ecr-registry-base is required}"
+case "${ENVIRONMENT}" in
+  staging|production) ;;
+  *) echo "Invalid environment: ${ENVIRONMENT}" >&2; exit 2 ;;
+esac
 
-CHART_DIR="$(dirname "$0")/../chart"
-
+CHART_DIR="$(cd "$(dirname "$0")/../chart" && pwd)"
 APP="$(app_name)"
-IMAGE_REPOSITORY="${ECR_REGISTRY_BASE}/${APP}"
-
-if [[ "${ENVIRONMENT}" == "staging" ]]; then
-  NAMESPACE="app-${APP}-staging"
-  RELEASE="${APP}-staging"
-else
-  NAMESPACE="app-${APP}"
-  RELEASE="${APP}"
+NAMESPACE="app-${APP}"
+RELEASE="${APP}"
+if [[ "${ENVIRONMENT}" == staging ]]; then
+  NAMESPACE+="-staging"
+  RELEASE+="-staging"
 fi
-
 export KUBECONFIG="$(pwd)/kubeconfig.yaml"
 
 HELM_ARGS=(
   upgrade --install "${RELEASE}" "${CHART_DIR}"
   -f "${CHART_DIR}/values.yaml"
   -f "${CHART_DIR}/values-${ENVIRONMENT}.yaml"
-  --namespace "${NAMESPACE}"
-  --create-namespace
-  --set "appName=${APP}"
-  --set "image.repository=${IMAGE_REPOSITORY}"
-  --set "image.tag=${IMAGE_TAG}"
-  --wait
+  --namespace "${NAMESPACE}" --create-namespace
+  --set-string "appName=${APP}"
+  --set-string "image.repository=${ECR_REGISTRY_BASE}/${APP}"
+  --set-string "image.tag=${IMAGE_TAG}"
+  --wait --timeout 5m
 )
-
-if [[ -n "${CNPG_BACKUP_BUCKET:-}" ]]; then
-  HELM_ARGS+=(--set-string "postgres.backup.destinationBucket=${CNPG_BACKUP_BUCKET}")
-fi
-
-if [[ -n "${CNPG_BACKUP_ROLE:-}" ]]; then
-  HELM_ARGS+=(--set-string "postgres.backup.iamRoleArn=${CNPG_BACKUP_ROLE}")
-fi
+# Migration from legacy manifests is explicit; never take ownership by default.
+case "${ADOPT_EXISTING_RESOURCES:-false}" in
+  true) HELM_ARGS+=(--take-ownership) ;;
+  false) ;;
+  *) echo "ADOPT_EXISTING_RESOURCES must be true or false" >&2; exit 2 ;;
+esac
+for setting in CNPG_BACKUP_BUCKET CNPG_BACKUP_ROLE; do
+  if [[ -n "${!setting:-}" ]]; then
+    case "${setting}" in
+      CNPG_BACKUP_BUCKET) key=destinationBucket ;;
+      CNPG_BACKUP_ROLE) key=iamRoleArn ;;
+    esac
+    HELM_ARGS+=(--set-string "postgres.backup.${key}=${!setting}")
+  fi
+done
 
 helm "${HELM_ARGS[@]}"
+# envFrom is read at process start. Restart after ESO sync so pods reload keys
+# even when an image or Secret reference has not changed.
+kubectl wait --for=condition=Ready "externalsecret/${APP}-secret" \
+  --namespace "${NAMESPACE}" --timeout=120s
+kubectl rollout restart "deployment/${APP}" --namespace "${NAMESPACE}"
+kubectl rollout status "deployment/${APP}" --namespace "${NAMESPACE}" --timeout=300s

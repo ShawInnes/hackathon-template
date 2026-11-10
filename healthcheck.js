@@ -3,15 +3,16 @@
 const http = require("http")
 
 const options = {
-  host: "localhost",
+  host: "127.0.0.1",
   port: process.env.PORT || 3000,
-  path: "/",
+  path: process.env.HEALTHCHECK_PATH || "/",
   timeout: 2000,
 }
 
 const request = http.request(options, (res) => {
   console.log(`Healthcheck status: ${res.statusCode}`)
-  if (res.statusCode >= 200 && res.statusCode < 500) {
+  const maxStatus = process.env.HEALTHCHECK_PATH ? 300 : 500
+  if (res.statusCode >= 200 && res.statusCode < maxStatus) {
     process.exit(0)
   } else {
     process.exit(1)

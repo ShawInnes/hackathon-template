@@ -1,6 +1,6 @@
 apiVersion: v2
 name: hackathon-template
-description: Helm chart for the hackathon-template Next.js app (app + optional bundled Postgres)
+description: Shared Next.js application and optional CloudNativePG database
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "0.1.0"

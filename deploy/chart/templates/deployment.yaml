@@ -17,16 +17,22 @@ spec:
         app: {{ include "app.name" . }}
     spec:
       serviceAccountName: {{ include "app.name" . }}-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
       containers:
         - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
             - containerPort: 3000
           envFrom:
             - configMapRef:
                 name: {{ include "app.name" . }}-config
             - secretRef:
-                name: {{ .Values.secret.existingSecret | default (printf "%s-secret" (include "app.name" .)) }}
+                name: {{ include "app.name" . }}-secret
           env:
             - name: DATABASE_URL
               valueFrom:

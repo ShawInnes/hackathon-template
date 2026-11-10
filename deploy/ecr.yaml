@@ -4,7 +4,7 @@
 # BuildAndPublish run (kubectl apply is a no-op once it already exists).
 #
 # Usage: envsubst < deploy/ecr.yaml | kubectl apply -f -
-#   APP_NAME - app/repository name, e.g. hackathon-template
+#   APP_NAME - app/repository name, derived from the git remote
 apiVersion: ecr.aws.m.upbound.io/v1beta1
 kind: Repository
 metadata:

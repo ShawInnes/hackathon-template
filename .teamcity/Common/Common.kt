@@ -86,7 +86,7 @@ fun BuildSteps.installKubectlEnvsubstAndHelm() {
             chmod +x envsubst
             mv ./envsubst ~/.local/bin/envsubst
 
-            curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | USE_SUDO=false HELM_INSTALL_DIR=~/.local/bin bash
+            curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | DESIRED_VERSION=v3.19.0 USE_SUDO=false HELM_INSTALL_DIR=~/.local/bin bash
         """.trimIndent()
     }
 }
