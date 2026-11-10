@@ -35,10 +35,10 @@ inline Helm secret or manually referenced app Secret mode. Each namespace gets
 an `<app>-secret` populated by its ExternalSecret. CloudNativePG still manages
 its database credentials; an external database can use its own connection Secret.
 
-By default both environments read `/techlab/workloads/<app>`, preserving existing
-SSM paths. To isolate them, set `externalSecret.ssmPath` in each environment's
-values, for example `/techlab/workloads/<app>/staging`. Seed every configured path
-before deploying. The seed script reads the path from the rendered chart.
+Staging and production always share `/techlab/workloads/<app>`. Configure any
+shared `externalSecret.ssmPath` or `ssmPathPrefix` override in `values.yaml` only;
+do not override it in environment values. The seed command renders the base
+values and has no environment argument.
 
 All immediate child parameters with lowercase kebab-case names are discovered.
 For example `auth-secret` becomes `AUTH_SECRET`, `openai-api-key` becomes
@@ -48,31 +48,44 @@ excluded. `auth-secret` is explicitly required. The store's IAM role needs
 Discovery and key rewriting follow the
 [External Secrets rewrite documentation](https://external-secrets.io/latest/guides/datafrom-rewrite/).
 
-Create a local JSON file outside the repository, with a string value for each key:
-
-```json
-{
-  "AUTH_SECRET": "replace-with-an-existing-or-new-random-secret",
-  "OPENAI_API_KEY": "replace-with-your-key"
-}
-```
-
-Run from the repository root using Python 3.9+, Helm, AWS CLI and credentials with
-SSM read/write and the relevant KMS permissions:
+Run the interactive bootstrap once from the repository root using Python 3.9+,
+Helm, AWS CLI and credentials with SSM read/write and the relevant KMS permissions:
 
 ```sh
-python3 deploy/scripts/seed-secrets.py staging /private/tmp/app-secrets.json --dry-run
-python3 deploy/scripts/seed-secrets.py staging /private/tmp/app-secrets.json --region ap-southeast-2
-python3 deploy/scripts/seed-secrets.py production /private/tmp/app-secrets.json --region ap-southeast-2
+python3 deploy/scripts/seed-secrets.py --region ap-southeast-2
 ```
 
-An empty JSON object generates `AUTH_SECRET` on first use. Existing parameters
-are kept by default; `--overwrite` requires an explicit `AUTH_SECRET` and replaces
-supplied keys. Optional `--kms-key-id` selects a customer-managed KMS key.
-Values are sent as SecureStrings through a mode-0600 temporary file, never printed
-or put in process arguments. Delete the local input file when finished. For an
-existing app, seed its current AUTH_SECRET to preserve sessions. Seed credentials
-are operator credentials; deployment jobs do not need SSM write access.
+The command prints the shared path, checks `AUTH_SECRET` first, then repeatedly
+asks for a variable name and a hidden value. For a new `AUTH_SECRET`, enter the
+current secret or press Enter to generate a random one. For other variables,
+enter names such as `OPENAI_API_KEY` or `openai-api-key`, followed by a non-empty
+value. Press Enter at the variable-name prompt to finish. No input file is needed.
+
+The command scans root `.env.example`, `.env.sample`, `.env.template` and their
+`.env.<name>.example`/`.sample`/`.template` variants, plus environment references
+in application code under `src/`, `worker/` and `scripts/`. It suggests names
+containing secret/token/password/passphrase or API/private/access/signing/encryption
+key markers, shows their source files, and asks `Seed <NAME>? [y/N]` before asking
+for a hidden value. AUTH_SECRET is handled first and is not suggested twice.
+Public variables and chart-managed keys are excluded. Generated/build/dependency
+code and symlink files are skipped. Local `.env` and `.env.local` files are not
+scanned by default, and example values are never used or executed.
+
+Discovery is a naming heuristic: optional integrations can be skipped, unusual
+secret names or variables read implicitly by libraries can be entered manually.
+Use `--scan-file config/env.sample` to include another example file (repeatable),
+or `--no-discover` to use manual entry only. Additional files are scanned for
+variable names only; their values are never used.
+
+Existing parameters are kept without asking for their values. Use `--overwrite`
+to supply replacement values interactively; pressing Enter at an existing value
+keeps it, including AUTH_SECRET. Use `--dry-run` to preview parameter names without
+calling AWS. Optional `--kms-key-id` selects a customer-managed KMS key.
+Secret input requires an interactive terminal and is never echoed. Values are
+sent as SecureStrings through a mode-0600 temporary file, never printed or put in
+process arguments. Each parameter is saved as it is entered; stopping bootstrap
+leaves already-seeded parameters intact. Seed credentials are operator credentials;
+deployment jobs do not need SSM write access.
 
 Reserve `DATABASE_URL`, `PORT`, `AUTH_URL`, `APP_BASE_URL`, `APP_NAME`, `NAMESPACE`
 and `AUTH_ENABLED` for the chart. Put non-secret application settings in `config`

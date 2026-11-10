@@ -1,4 +1,5 @@
 # Shared chart defaults. Put application/environment differences in values-<environment>.yaml.
+# Set the shared SSM path here only; staging and production use the same path.
 # externalSecret.ssmPath overrides the default <ssmPathPrefix>/<appName> path.
 # SSM parameters use lower-kebab-case; all matching keys become UPPER_SNAKE_CASE env vars.
 # postgres.appSuperuser applies only during initial database bootstrap; default false.

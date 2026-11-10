@@ -90,7 +90,7 @@ class SeedTests(unittest.TestCase):
         self.seed = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.seed)
 
-    def seed_values(self, values, flags=(), exists=False, denied=False):
+    def seed_values(self, names=(), values=("",), flags=(), exists=False, denied=False, discovered=None):
         writes = []
         def aws(args):
             if "get-parameter" in args:
@@ -100,50 +100,133 @@ class SeedTests(unittest.TestCase):
             writes.append(json.loads(Path(payload_path).read_text()))
             self.assertNotIn("top-secret", str(args))
             return subprocess.CompletedProcess(args, 0, "", "")
-        with tempfile.TemporaryDirectory() as directory:
-            file = Path(directory) / "input.json"
-            file.write_text(json.dumps(values))
-            output = io.StringIO()
-            with patch.object(sys, "argv", ["seed", "staging", str(file), *flags]), \
-                 patch.object(self.seed.subprocess, "check_output", side_effect=[
-                     "https://example.test/t1-example.git\n", 'spec:\n  dataFrom:\n    - find:\n        path: "/custom/example/staging"\n']), \
-                 patch.object(self.seed, "run", side_effect=aws), contextlib.redirect_stdout(output):
-                self.seed.main()
-            self.assertNotIn("top-secret", output.getvalue())
-        return writes, output.getvalue()
+        output = io.StringIO()
+        with patch.object(sys, "argv", ["seed", *flags]), \
+             patch.object(sys.stdin, "isatty", return_value=True), \
+             patch("builtins.input", side_effect=[*names, ""]), \
+             patch.object(self.seed.getpass, "getpass", side_effect=values) as hidden, \
+             patch.object(self.seed.subprocess, "check_output", side_effect=[
+                 "https://example.test/t1-example.git\n", 'spec:\n  dataFrom:\n    - find:\n        path: "/custom/example"\n']) as render, \
+             patch.object(self.seed, "discover_secrets", return_value=discovered or {}) as discovery, \
+             patch.object(self.seed, "run", side_effect=aws) as calls, contextlib.redirect_stdout(output):
+            self.seed.main()
+        self.assertNotIn("top-secret", output.getvalue())
+        if "--no-discover" in flags:
+            discovery.assert_not_called()
+        helm = render.call_args_list[1].args[0]
+        self.assertFalse(any("values-staging" in arg or "values-production" in arg for arg in helm))
+        return writes, output.getvalue(), hidden.call_count, calls.call_count
 
     def test_new_values_and_generated_auth(self):
-        writes, _ = self.seed_values({"OPENAI_API_KEY": "top-secret"})
-        self.assertEqual([x["Name"] for x in writes], ["/custom/example/staging/auth-secret", "/custom/example/staging/openai-api-key"])
+        writes, _, _, _ = self.seed_values(["OPENAI_API_KEY"], ["", "top-secret"])
+        self.assertEqual([x["Name"] for x in writes], ["/custom/example/auth-secret", "/custom/example/openai-api-key"])
         self.assertTrue(all(x["Type"] == "SecureString" and not x["Overwrite"] for x in writes))
         self.assertGreaterEqual(len(writes[0]["Value"]), 32)
 
-    def test_existing_values_are_preserved(self):
-        writes, output = self.seed_values({"AUTH_SECRET": "top-secret"}, exists=True)
+    def test_existing_values_do_not_prompt_for_values(self):
+        writes, output, hidden, _ = self.seed_values(["OPENAI_API_KEY"], [], exists=True)
+        self.assertEqual(writes, [])
+        self.assertEqual(hidden, 0)
+        self.assertIn("Kept", output)
+
+    def test_explicit_auth_and_kebab_case_names(self):
+        writes, _, _, _ = self.seed_values(["openai-api-key"], ["top-secret", "api-value"])
+        self.assertEqual(writes[0]["Value"], "top-secret")
+        self.assertEqual(writes[1]["Name"], "/custom/example/openai-api-key")
+
+    def test_explicit_overwrite(self):
+        writes, _, _, _ = self.seed_values(values=["top-secret"], flags=["--overwrite"], exists=True)
+        self.assertTrue(writes[0]["Overwrite"])
+
+    def test_blank_overwrite_keeps_auth(self):
+        writes, output, _, _ = self.seed_values(flags=["--overwrite"], exists=True)
         self.assertEqual(writes, [])
         self.assertIn("Kept", output)
 
-    def test_explicit_overwrite(self):
-        writes, _ = self.seed_values({"AUTH_SECRET": "top-secret"}, ["--overwrite"], exists=True)
-        self.assertTrue(writes[0]["Overwrite"])
+    def test_empty_non_auth_value_reprompts(self):
+        writes, output, _, _ = self.seed_values(["OPENAI_API_KEY"], ["", "", "top-secret"])
+        self.assertEqual(writes[1]["Value"], "top-secret")
+        self.assertIn("non-empty", output)
 
-    def test_overwrite_cannot_implicitly_rotate_auth(self):
-        with self.assertRaises(ValueError):
-            self.seed_values({}, ["--overwrite"])
-
-    def test_dry_run_never_writes(self):
-        writes, output = self.seed_values({"AUTH_SECRET": "top-secret"}, ["--dry-run"])
+    def test_dry_run_never_calls_aws(self):
+        writes, output, _, calls = self.seed_values(values=["top-secret"], flags=["--dry-run"])
         self.assertEqual(writes, [])
-        self.assertIn("Would seed", output)
+        self.assertEqual(calls, 0)
+        self.assertIn("Would seed /custom/example/auth-secret", output)
 
     def test_access_denied_never_writes(self):
         with self.assertRaises(RuntimeError):
-            self.seed_values({"AUTH_SECRET": "top-secret"}, denied=True)
+            self.seed_values(denied=True)
 
-    def test_reject_invalid_and_reserved_keys(self):
-        for key in ["auth-secret", "BAD__KEY", "AUTH_URL", "DATABASE_URL", "PORT"]:
-            with self.subTest(key=key), self.assertRaises(ValueError):
-                self.seed_values({key: "top-secret"})
+    def test_invalid_and_reserved_names_reprompt(self):
+        writes, output, _, _ = self.seed_values(["BAD__KEY", "AUTH_URL", "DATABASE_URL", "PORT", "OPENAI_API_KEY"], ["", "top-secret"])
+        self.assertEqual(len(writes), 2)
+        self.assertIn("managed by the chart", output)
+
+    def test_non_interactive_input_rejected_before_aws(self):
+        with patch.object(sys, "argv", ["seed"]), patch.object(sys.stdin, "isatty", return_value=False), \
+             patch.object(self.seed, "run") as aws, self.assertRaises(RuntimeError):
+            self.seed.main()
+        aws.assert_not_called()
+
+    def test_region_and_kms_selection(self):
+        writes, _, _, _ = self.seed_values(flags=["--region", "ap-southeast-2", "--kms-key-id", "alias/bootstrap"])
+        self.assertEqual(writes[0]["KeyId"], "alias/bootstrap")
+
+    def test_discovery_suggests_then_seeds_only_confirmed_names(self):
+        writes, output, _, _ = self.seed_values(["yes"], ["", "top-secret"],
+            discovered={"OPENAI_API_KEY": [".env.example", "src/lib/ai.ts"]})
+        self.assertEqual(writes[1]["Name"], "/custom/example/openai-api-key")
+        self.assertIn(".env.example", output)
+
+    def test_discovery_can_be_declined(self):
+        writes, _, hidden, _ = self.seed_values(["no"], [""],
+            discovered={"OPENAI_API_KEY": [".env.example"]})
+        self.assertEqual(len(writes), 1)
+        self.assertEqual(hidden, 1)
+
+    def test_manual_only_option(self):
+        self.seed_values(flags=["--no-discover"])
+
+    def test_discovery_examples_and_source_without_local_env_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".env.example").write_text(
+                'AUTH_SECRET="example-secret"\nexport OPENAI_API_KEY="do-not-load"\n'
+                '# OPTIONAL_TOKEN=""\nAUTH_OIDC_ID=""\nDATABASE_URL=""\n'
+                'NEXT_PUBLIC_API_KEY=""\nINITIAL_ADMIN_EMAILS=""\n')
+            (root / ".env.local").write_text('LOCAL_ONLY_SECRET="never-read"\n')
+            (root / ".env.production.example").write_text('RESEND_API_KEY=""\n')
+            (root / "src/lib").mkdir(parents=True)
+            (root / "src/lib/env.ts").write_text(
+                'const a = process.env.OPENAI_API_KEY; const b = process.env["CRON_SECRET"];\n'
+                'const c = env("SIGNING_KEY");\n  WEBHOOK_SECRET: z.string(),\n')
+            found = self.seed.discover_secrets(root)
+            self.assertEqual(set(found), {"OPENAI_API_KEY", "OPTIONAL_TOKEN", "RESEND_API_KEY", "CRON_SECRET", "SIGNING_KEY", "WEBHOOK_SECRET"})
+            self.assertEqual(found["OPENAI_API_KEY"], [".env.example", "src/lib/env.ts"])
+            self.assertNotIn("do-not-load", str(found))
+            self.assertNotIn("never-read", str(found))
+
+    def test_discovery_ignores_generated_code_and_symlink_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "src/generated").mkdir(parents=True)
+            (root / "src/generated/env.ts").write_text('process.env.GENERATED_SECRET')
+            target = root / "private.txt"
+            target.write_text('process.env.LINKED_SECRET')
+            (root / "src/linked.ts").symlink_to(target)
+            self.assertEqual(self.seed.discover_secrets(root), {})
+
+    def test_explicit_example_file_and_missing_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "config").mkdir()
+            (root / "config/env.sample").write_text('SERVICE_API_KEY=""\n')
+            self.assertEqual(self.seed.discover_secrets(root, ["config/env.sample"]),
+                             {"SERVICE_API_KEY": ["config/env.sample"]})
+            with self.assertRaises(RuntimeError):
+                self.seed.discover_secrets(root, ["missing.sample"])
+
 
 
 class EntrypointTests(unittest.TestCase):
